@@ -1,5 +1,7 @@
 # ウマチケ（UMATIKET）— 競馬投票デモサイト
 
+**デモURL: https://sadaakiemuravaltes.github.io/Betting-html/**
+
 テスト自動化・UI検証用に作られた**架空の競馬投票サイト**です。
 実在の競馬場・競走馬・騎手・団体とは一切関係がなく、実際の金銭のやり取りは発生しません。
 
@@ -21,6 +23,19 @@ python -m http.server 8080
 
 `file://` でも動きますが、ブラウザによっては localStorage が使えず状態が保持されません。
 HTTP で配信することを推奨します。
+
+## デプロイ
+
+GitHub Pages（`main` ブランチのルート）で公開しています。ビルド不要なので **main に push すればそのまま反映**されます。
+
+```bash
+git add -A
+git commit -m "..."
+git push origin main
+```
+
+Windows の PowerShell / cygwin 環境では、cygwin 版 git が認証エラーになるため
+`C:\Program Files\Git\cmd\git.exe` を明示的に使ってください。
 
 ---
 
