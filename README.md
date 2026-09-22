@@ -71,10 +71,23 @@ Betting-html/
 
 ### 端末の振り分けと切り替え
 
-- `index.html` が UserAgent と画面幅から端末を判定し、`pc/` `tablet/` `sp/` へリダイレクトします。
-- URL に `?device=pc` / `?device=tablet` / `?device=sp` を付けると表示を固定できます（localStorage に記憶）。
-- `index.html?select=1` で手動の端末選択画面、`index.html?reset=1` で自動判定に戻します。
-- 各端末のフッター／ヘルプ画面からも相互に行き来できます。
+判定は UserAgent を優先し、判定できない場合に `screen.width` で補います
+（ウィンドウをリサイズしても切り替わらないよう、`innerWidth` ではなく `screen.width` を使います）。
+
+- `index.html` が端末を判定して `pc/` `tablet/` `sp/` へリダイレクトします。
+- **端末専用ページのURLを直接開いた場合も判定します。** 例えばスマホで `/pc/index.html` を開くと
+  `/sp/index.html` へ差し替わります（`#/wallet` などのハッシュは引き継ぎます）。
+- iPadOS 13以降の Safari は UserAgent が `Macintosh` になるため、タッチの有無を併用して判定します。
+
+**手動で固定したいとき**
+
+- URL に `?device=pc` / `?device=tablet` / `?device=sp` を付けると、その表示に固定されます（localStorage に記憶）。
+- 固定は「固定した時点の本来の端末」とセットで保存され、**実機が変われば自動的に破棄**されます。
+  PCで「スマホ版」に固定しても、実機のスマホからのアクセスには影響しません。
+- `index.html?select=1` で手動の端末選択画面、`index.html?reset=1` で固定を解除して自動判定に戻します。
+- 各端末のフッター／ヘルプ画面からも相互に行き来できます（リンクには `?device=` が付いています）。
+
+現在の判定結果・固定状態・UserAgent は各端末の **ヘルプ画面**で確認できます。
 
 ---
 
