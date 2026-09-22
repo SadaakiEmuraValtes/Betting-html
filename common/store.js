@@ -385,32 +385,60 @@
 
   /* ------------------------------------------------ デバイス切替 */
 
-  function detectDevice() {
-    var forced = getDeviceOverride();
-    if (forced) return forced;
-    var ua = navigator.userAgent;
-    if (/iPad|Android(?!.*Mobile)|Tablet|PlayBook|Silk/i.test(ua)) return 'tablet';
-    if (/iPhone|iPod|Android.*Mobile|Windows Phone|BlackBerry|Mobile Safari/i.test(ua)) return 'sp';
+  // UA と画面サイズだけで判定した「本来の端末」（固定指定は見ない）
+  function naturalDevice() {
+    var ua = navigator.userAgent || '';
+    // iPadOS 13以降の Safari は UA が Macintosh になるため、タッチの有無で判定する
+    if (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1) return 'tablet';
+    if (/iPad|Tablet|PlayBook|Silk|Kindle|Nexus 7|Nexus 10|Android(?!.*Mobile)/i.test(ua)) return 'tablet';
+    if (/iPhone|iPod|Android|Windows Phone|BlackBerry|BB10|IEMobile|Opera Mini|Mobile/i.test(ua)) return 'sp';
     var w = window.screen && window.screen.width ? window.screen.width : window.innerWidth;
     if (w <= 767) return 'sp';
     if (w <= 1024) return 'tablet';
     return 'pc';
   }
 
+  function detectDevice() {
+    return getDeviceOverride() || naturalDevice();
+  }
+
+  /* 表示端末の固定指定
+   * `{ d: 表示する端末, n: 固定した時点の本来の端末 }` の形で保存する。
+   * 本来の端末が変わったら固定を破棄する（PCで固定した表示をスマホに持ち込まない）。
+   */
   function getDeviceOverride() {
-    try {
-      var q = new RegExp('[?&]device=(pc|tablet|sp)').exec(location.search);
-      if (q) { localStorage.setItem(DEVICE_KEY, q[1]); return q[1]; }
-      return localStorage.getItem(DEVICE_KEY) || '';
-    } catch (e) { return ''; }
+    var q = new RegExp('[?&]device=(pc|tablet|sp)').exec(location.search);
+    if (q) { setDevice(q[1]); return q[1]; }
+
+    var raw;
+    try { raw = localStorage.getItem(DEVICE_KEY) || ''; } catch (e) { return ''; }
+    if (!raw) return '';
+
+    var o = null;
+    if (raw.charAt(0) === '{') { try { o = JSON.parse(raw); } catch (e) { o = null; } }
+    // 旧形式（端末名だけを保存していたもの）は破棄して作り直させる
+    if (!o || !o.d || !o.n) { clearDevice(); return ''; }
+    if (o.n !== naturalDevice()) { clearDevice(); return ''; }
+    return o.d;
   }
 
   function setDevice(d) {
-    try { localStorage.setItem(DEVICE_KEY, d); } catch (e) { }
+    try { localStorage.setItem(DEVICE_KEY, JSON.stringify({ d: d, n: naturalDevice() })); } catch (e) { }
   }
 
   function clearDevice() {
     try { localStorage.removeItem(DEVICE_KEY); } catch (e) { }
+  }
+
+  /* 端末専用ページの入口チェック。
+   * 表示すべき端末と違うページを開いていたら、正しいページへ差し替える。
+   * ハッシュ（画面遷移先）は引き継ぐ。true を返したら呼び出し側は描画を中止する。
+   */
+  function enforceDevice(pageDevice) {
+    var want = detectDevice();
+    if (want === pageDevice) return false;
+    location.replace('../' + want + '/index.html' + (location.hash || ''));
+    return true;
   }
 
   /* ------------------------------------------------ リセット */
@@ -456,9 +484,11 @@
     raceStatus: raceStatus,
 
     detectDevice: detectDevice,
+    naturalDevice: naturalDevice,
     getDeviceOverride: getDeviceOverride,
     setDevice: setDevice,
     clearDevice: clearDevice,
+    enforceDevice: enforceDevice,
     resetAll: resetAll
   };
 })(window);

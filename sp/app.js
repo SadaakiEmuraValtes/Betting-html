@@ -6,6 +6,10 @@
   'use strict';
 
   var D = UmaData, B = UmaBet, S = UmaStore;
+
+  // 端末が違えば専用ページへ差し替える
+  if (S.enforceDevice('sp')) return;
+
   var view = document.getElementById('view');
 
   /* ------------------------------------------------ 小道具 */
@@ -40,6 +44,10 @@
   function statusBadge(st) { return '<span class="badge badge-' + st + '">' + S.STATUS_LABEL[st] + '</span>'; }
   function hnum(n) { return '<span class="hnum">' + n + '</span>'; }
   function kv(k, v) { return '<div class="kv"><span class="k">' + k + '</span><span class="v">' + v + '</span></div>'; }
+
+  function deviceLabel(d) {
+    return { pc: 'PC版', tablet: 'タブレット版', sp: 'スマートフォン版' }[d] || d;
+  }
 
   /* ------------------------------------------------ ヘッダー */
 
@@ -800,6 +808,12 @@
       '<p>ウマチケはテスト自動化・UI検証のための<b>架空の競馬投票サイト</b>です。実在の競馬場・競走・団体とは関係ありません。</p>' +
       '<p>PC・タブレット・スマートフォンで<b>別々のHTML / CSS / JavaScript</b>を配信しています（レスポンシブではありません）。' +
       '現在の表示は<b>スマホ版</b>（<code>/sp/index.html</code>）です。</p>' +
+      '</div><div class="box-body flush">' +
+      kv('自動判定結果', deviceLabel(S.naturalDevice())) +
+      kv('表示の固定', S.getDeviceOverride() ? deviceLabel(S.getDeviceOverride()) + 'に固定中' : 'なし（自動判定）') +
+      '</div><div class="box-body" style="padding-top:0">' +
+      '<div style="font-size:10.5px;color:#76867e;word-break:break-all;margin-bottom:10px">UA: ' + esc(navigator.userAgent) + '</div>' +
+      '<p style="font-size:12.5px">端末専用ページのURLを直接開いた場合も、判定結果と違えば自動的に正しいページへ移動します。</p>' +
       '<a class="btn btn-ghost" href="../pc/index.html?device=pc" style="margin-bottom:8px">PC版を開く</a>' +
       '<a class="btn btn-ghost" href="../tablet/index.html?device=tablet" style="margin-bottom:8px">タブレット版を開く</a>' +
       '<a class="btn btn-ghost" href="../index.html?select=1">端末選択画面</a>' +

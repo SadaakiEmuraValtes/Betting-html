@@ -6,6 +6,10 @@
   'use strict';
 
   var D = UmaData, B = UmaBet, S = UmaStore;
+
+  // 端末が違えば専用ページへ差し替える（スマホでPC版URLを開いた場合など）
+  if (S.enforceDevice('pc')) return;
+
   var view = document.getElementById('view');
 
   /* ------------------------------------------------ 小道具 */
@@ -851,6 +855,10 @@
 
   function row(k, v) { return '<tr><th style="width:190px">' + k + '</th><td>' + v + '</td></tr>'; }
 
+  function deviceLabel(d) {
+    return { pc: 'PC版', tablet: 'タブレット版', sp: 'スマートフォン版' }[d] || d;
+  }
+
   /* ================================================ ログイン */
 
   function viewLogin() {
@@ -975,6 +983,12 @@
 
       '<div class="panel"><h2>表示端末の切り替え</h2><div class="panel-body">' +
       '<p>現在の表示：<b>PC版</b>（<code>/pc/index.html</code>）</p>' +
+      '<table class="table" style="margin-bottom:14px"><tbody>' +
+      row('自動判定結果', '<b>' + deviceLabel(S.naturalDevice()) + '</b>') +
+      row('表示の固定', S.getDeviceOverride() ? '<b>' + deviceLabel(S.getDeviceOverride()) + '</b>に固定中' : 'なし（自動判定）') +
+      row('User Agent', '<span style="font-size:11px;word-break:break-all">' + esc(navigator.userAgent) + '</span>') +
+      '</tbody></table>' +
+      '<p>端末専用ページのURLを直接開いた場合も、判定結果と違えば自動的に正しいページへ移動します。</p>' +
       '<p>' +
       '<a class="btn btn-ghost" href="../tablet/index.html?device=tablet">タブレット版を開く</a> ' +
       '<a class="btn btn-ghost" href="../sp/index.html?device=sp">スマホ版を開く</a> ' +
