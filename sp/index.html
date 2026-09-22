@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ウマチケ（スマホ版） | 競馬投票デモ</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🐎</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-device="sp">
+
+<header class="sp-header">
+  <a class="sp-logo" href="#/">ウマ<span>チケ</span></a>
+  <select class="sp-clock" id="hd-clock" title="仮想時刻"></select>
+  <div class="sp-hd-right">
+    <div class="sp-bal" id="hd-balance-box" style="display:none">購入可能額<b id="hd-balance">¥0</b></div>
+    <div id="hd-user"></div>
+  </div>
+</header>
+
+<main class="sp-main" id="view"></main>
+
+<footer class="sp-footer">
+  ウマチケはテスト・検証用の架空サイトです。<br>
+  実在の競馬場・競走・団体とは一切関係ありません。<br>
+  <span style="display:inline-block;margin-top:6px">
+    <a href="../pc/index.html?device=pc">PC版</a>｜
+    <a href="../tablet/index.html?device=tablet">タブレット版</a>｜
+    <a href="../index.html?select=1">端末選択</a>
+  </span>
+</footer>
+
+<nav class="sp-tabbar" id="sp-tabbar">
+  <a href="#/" data-nav="home"><span class="ic">🏇</span>レース</a>
+  <a href="#/history" data-nav="history"><span class="ic">🎫</span>投票履歴</a>
+  <a href="#/wallet" data-nav="wallet"><span class="ic">💰</span>入出金</a>
+  <a href="#/mypage" data-nav="mypage"><span class="ic">👤</span>マイページ</a>
+  <a href="#/help" data-nav="help"><span class="ic">❓</span>ヘルプ</a>
+</nav>
+
+<div id="wiz-root"></div>
+<div id="sheet-root"></div>
+<div class="toast-wrap" id="toast-root"></div>
+
+<script src="../common/data.js"></script>
+<script src="../common/bet.js"></script>
+<script src="../common/store.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

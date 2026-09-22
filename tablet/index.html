@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=834">
+<title>ウマチケ（タブレット版） | 競馬投票デモサイト</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🐎</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-device="tablet">
+
+<header class="tb-header">
+  <div class="tb-container tb-header-top">
+    <a class="tb-logo" href="#/">ウマ<span>チケ</span><small>UMATIKET / TABLET</small></a>
+    <div class="tb-clock">
+      <span>仮想時刻</span>
+      <select id="hd-clock" title="仮想時刻"></select>
+    </div>
+    <div class="tb-bal" id="hd-balance-box" style="display:none">購入可能額<b id="hd-balance">¥0</b></div>
+    <div id="hd-user"></div>
+  </div>
+  <nav class="tb-nav" id="tb-nav">
+    <a href="#/" data-nav="home"><span class="ic">🏇</span>レース</a>
+    <a href="#/history" data-nav="history"><span class="ic">🎫</span>投票履歴</a>
+    <a href="#/wallet" data-nav="wallet"><span class="ic">💰</span>入出金</a>
+    <a href="#/mypage" data-nav="mypage"><span class="ic">👤</span>マイページ</a>
+    <a href="#/help" data-nav="help"><span class="ic">❓</span>ヘルプ</a>
+  </nav>
+</header>
+
+<main class="tb-container tb-main" id="view"></main>
+
+<footer class="tb-footer">
+  <div class="tb-container">
+    <div>
+      <a href="#/">レース</a><a href="#/wallet">入出金</a><a href="#/help">ヘルプ</a>
+    </div>
+    <div style="margin-top:8px">
+      ウマチケはテスト・検証用の架空サイトです。実在の競馬場・競走・団体とは一切関係ありません。
+    </div>
+    <div style="margin-top:8px">
+      表示端末：
+      <a href="../pc/index.html?device=pc">PC版</a>
+      <a href="../sp/index.html?device=sp">スマホ版</a>
+      <a href="../index.html?select=1">自動判定</a>
+    </div>
+  </div>
+</footer>
+
+<div id="sheet-root"></div>
+<div id="modal-root"></div>
+<div class="toast-wrap" id="toast-root"></div>
+
+<script src="../common/data.js"></script>
+<script src="../common/bet.js"></script>
+<script src="../common/store.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

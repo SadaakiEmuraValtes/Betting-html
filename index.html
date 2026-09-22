@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ウマチケ | 端末判定</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🐎</text></svg>">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+    background: linear-gradient(160deg, #0f2f22 0%, #123d2b 45%, #0b241a 100%);
+    color: #fff; padding: 24px;
+  }
+  .box { width: 100%; max-width: 640px; text-align: center; }
+  .logo { font-size: 34px; font-weight: 800; letter-spacing: .12em; }
+  .logo span { color: #f7c948; }
+  .lead { margin: 10px 0 28px; color: #bcd9c9; font-size: 14px; line-height: 1.8; }
+  .spinner {
+    width: 44px; height: 44px; margin: 0 auto 18px; border-radius: 50%;
+    border: 4px solid rgba(255,255,255,.18); border-top-color: #f7c948;
+    animation: spin .9s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .detected { font-size: 15px; color: #f7c948; font-weight: 700; margin-bottom: 26px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
+  .card {
+    display: block; text-decoration: none; color: #fff; padding: 22px 14px; border-radius: 14px;
+    background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.16);
+    transition: .15s; cursor: pointer;
+  }
+  .card:hover { background: rgba(247,201,72,.16); border-color: #f7c948; transform: translateY(-3px); }
+  .card .ic { font-size: 30px; display: block; margin-bottom: 8px; }
+  .card .nm { font-weight: 700; font-size: 15px; }
+  .card .sz { font-size: 11px; color: #a9c8b7; margin-top: 4px; }
+  .note { margin-top: 26px; font-size: 12px; color: #91ae9f; line-height: 1.9; }
+  .note code { background: rgba(0,0,0,.3); padding: 2px 6px; border-radius: 4px; }
+  a.plain { color: #f7c948; }
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="logo">ウマ<span>チケ</span></div>
+  <p class="lead">
+    競馬投票デモサイト（架空）<br>
+    ご利用の端末に合わせて<strong>PC / タブレット / スマートフォン専用画面</strong>へ移動します。
+  </p>
+
+  <div id="auto">
+    <div class="spinner"></div>
+    <div class="detected" id="detected">端末を判定しています…</div>
+  </div>
+
+  <div id="select" style="display:none">
+    <div class="detected">表示する画面を選択してください</div>
+    <div class="grid">
+      <a class="card" href="pc/index.html?device=pc" data-device="pc">
+        <span class="ic">🖥️</span><span class="nm">PC版</span><span class="sz">幅1280px固定 / サイドメニュー</span>
+      </a>
+      <a class="card" href="tablet/index.html?device=tablet" data-device="tablet">
+        <span class="ic">📱</span><span class="nm">タブレット版</span><span class="sz">幅834px想定 / 上部タブ</span>
+      </a>
+      <a class="card" href="sp/index.html?device=sp" data-device="sp">
+        <span class="ic">📲</span><span class="nm">スマートフォン版</span><span class="sz">幅375px想定 / 下部タブバー</span>
+      </a>
+    </div>
+  </div>
+
+  <p class="note">
+    自動判定をやり直す場合は <a class="plain" href="index.html?reset=1">こちら</a>。<br>
+    URL に <code>?device=pc</code> / <code>?device=tablet</code> / <code>?device=sp</code> を付けると表示を固定できます。<br>
+    本サイトはテスト・学習目的の架空サイトです。実在の競走・団体とは一切関係ありません。
+  </p>
+</div>
+
+<script src="common/data.js"></script>
+<script src="common/bet.js"></script>
+<script src="common/store.js"></script>
+<script>
+(function () {
+  var qs = location.search;
+  var wantSelect = /[?&]select=1/.test(qs);
+
+  if (/[?&]reset=1/.test(qs)) {
+    UmaStore.clearDevice();
+  }
+
+  var LABEL = { pc: 'PC版', tablet: 'タブレット版', sp: 'スマートフォン版' };
+  var PATH = { pc: 'pc/index.html', tablet: 'tablet/index.html', sp: 'sp/index.html' };
+
+  if (wantSelect) {
+    document.getElementById('auto').style.display = 'none';
+    document.getElementById('select').style.display = 'block';
+    Array.prototype.forEach.call(document.querySelectorAll('.card'), function (a) {
+      a.addEventListener('click', function () { UmaStore.setDevice(a.getAttribute('data-device')); });
+    });
+    return;
+  }
+
+  var device = UmaStore.detectDevice();
+  document.getElementById('detected').textContent =
+    LABEL[device] + ' へ移動します（' + (window.screen ? window.screen.width : window.innerWidth) + 'px）';
+
+  setTimeout(function () { location.replace(PATH[device]); }, 700);
+})();
+</script>
+</body>
+</html>

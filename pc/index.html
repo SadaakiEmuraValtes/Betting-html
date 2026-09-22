@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ウマチケ（PC版） | 競馬投票デモサイト</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🐎</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-device="pc">
+
+<header class="pc-header">
+  <div class="pc-header-inner">
+    <a class="pc-logo" href="#/">ウマ<span>チケ</span><small>UMATIKET / PC版</small></a>
+    <div class="pc-meeting">
+      開催日<br><b id="hd-date">—</b>
+    </div>
+    <div class="pc-clock">
+      <span>現在時刻（仮想）</span>
+      <select id="hd-clock" title="仮想時刻"></select>
+    </div>
+    <div class="pc-balance" id="hd-balance-box" style="display:none">
+      ご購入可能額<b id="hd-balance">¥0</b>
+    </div>
+    <div class="pc-user" id="hd-user"></div>
+  </div>
+</header>
+
+<div class="pc-wrap">
+  <aside class="pc-side">
+    <nav class="pc-nav" id="pc-nav">
+      <div class="pc-nav-title">メニュー</div>
+      <a href="#/" data-nav="home"><span class="ic">🏇</span>レース一覧</a>
+      <a href="#/history" data-nav="history"><span class="ic">🎫</span>投票履歴</a>
+      <a href="#/wallet" data-nav="wallet"><span class="ic">💰</span>入出金</a>
+      <a href="#/mypage" data-nav="mypage"><span class="ic">👤</span>マイページ</a>
+      <a href="#/help" data-nav="help"><span class="ic">❓</span>ヘルプ・テスト情報</a>
+    </nav>
+    <div class="pc-side-box">
+      <h4>本日の開催</h4>
+      <div id="side-venues">—</div>
+    </div>
+    <div class="pc-side-box">
+      <h4>ご利用にあたって</h4>
+      本サイトは検証・学習用の<b>架空の競馬投票サイト</b>です。<br>
+      実際の金銭のやり取りは一切発生しません。
+    </div>
+  </aside>
+
+  <main class="pc-main" id="view"></main>
+</div>
+
+<footer class="pc-footer">
+  <div class="pc-footer-inner">
+    <div class="disc">
+      <div>
+        <a href="#/">レース一覧</a><a href="#/wallet">入出金</a><a href="#/mypage">マイページ</a><a href="#/help">ヘルプ</a>
+      </div>
+      <div style="margin-top:8px">
+        ウマチケ（UMATIKET）はテスト自動化・UI検証のためのデモサイトです。<br>
+        実在の競馬場・競走馬・騎手・団体とは一切関係がありません。20歳未満の方の投票を模した操作はご遠慮ください。
+      </div>
+    </div>
+    <div class="device-switch">
+      表示端末の切り替え<br>
+      <a href="../tablet/index.html?device=tablet">タブレット版</a>
+      <a href="../sp/index.html?device=sp">スマホ版</a>
+      <a href="../index.html?select=1">自動判定</a>
+    </div>
+  </div>
+</footer>
+
+<div id="modal-root"></div>
+<div class="toast-wrap" id="toast-root"></div>
+
+<script src="../common/data.js"></script>
+<script src="../common/bet.js"></script>
+<script src="../common/store.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
