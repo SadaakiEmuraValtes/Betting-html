@@ -14,9 +14,9 @@
     <a class="tb-logo" href="#/">ウマ<span>チケ</span><small>UMATIKET / TABLET</small></a>
     <div class="tb-clock">
       <span>仮想時刻</span>
-      <select id="hd-clock" title="仮想時刻"></select>
+      <select id="hd-clock" class="uma-clock" title="仮想時刻"></select>
     </div>
-    <div class="tb-bal" id="hd-balance-box" style="display:none">購入可能額<b id="hd-balance">¥0</b></div>
+    <div class="tb-bal uma-balance-box" id="hd-balance-box" style="display:none">購入可能額<b id="hd-balance" class="uma-balance">¥0</b></div>
     <div id="hd-user"></div>
   </div>
   <nav class="tb-nav" id="tb-nav">
@@ -25,18 +25,30 @@
     <a href="#/wallet" data-nav="wallet"><span class="ic">💰</span>入出金</a>
     <a href="#/mypage" data-nav="mypage"><span class="ic">👤</span>マイページ</a>
     <a href="#/help" data-nav="help"><span class="ic">❓</span>ヘルプ</a>
+    <a href="#/disclaimer" data-nav="disclaimer"><span class="ic">⚠️</span>免責事項</a>
   </nav>
 </header>
+
+<div class="uma-disclaimer-bar">
+  <span class="uma-disclaimer-tag">デモサイト</span>
+  <span class="uma-disclaimer-text">
+    本サイトはテスト用の<b>架空の競馬投票サイト</b>です。<b>日本中央競馬会（JRA）をはじめ実在の団体とは一切関係ありません。</b>
+    競馬場名・レース名・馬名・騎手名はすべて架空です。
+  </span>
+  <a class="uma-disclaimer-link" href="#/disclaimer">詳しく</a>
+</div>
 
 <main class="tb-container tb-main" id="view"></main>
 
 <footer class="tb-footer">
   <div class="tb-container">
     <div>
-      <a href="#/">レース</a><a href="#/wallet">入出金</a><a href="#/help">ヘルプ</a>
+      <a href="#/">レース</a><a href="#/wallet">入出金</a><a href="#/help">ヘルプ</a><a href="#/disclaimer">免責事項</a>
     </div>
-    <div style="margin-top:8px">
-      ウマチケはテスト・検証用の架空サイトです。実在の競馬場・競走・団体とは一切関係ありません。
+    <div style="margin-top:8px" class="uma-footer-disclaimer">
+      ウマチケはテスト・検証用の<b>架空のデモサイト</b>です。<br>
+      <b>日本中央競馬会（JRA）および地方競馬全国協会（NAR）、その他実在のいかなる団体とも関係がありません。</b><br>
+      競馬場名・レース名・競走馬名・騎手名・調教師名・オッズ・払戻金はすべて架空です。実際の馬券購入はできません。
     </div>
     <div style="margin-top:8px">
       表示端末：

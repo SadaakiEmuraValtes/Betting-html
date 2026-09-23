@@ -11,23 +11,36 @@
 
 <header class="sp-header">
   <a class="sp-logo" href="#/">ウマ<span>チケ</span></a>
-  <select class="sp-clock" id="hd-clock" title="仮想時刻"></select>
+  <select class="sp-clock uma-clock" id="hd-clock" title="仮想時刻"></select>
   <div class="sp-hd-right">
-    <div class="sp-bal" id="hd-balance-box" style="display:none">購入可能額<b id="hd-balance">¥0</b></div>
+    <div class="sp-bal uma-balance-box" id="hd-balance-box" style="display:none">購入可能額<b id="hd-balance" class="uma-balance">¥0</b></div>
     <div id="hd-user"></div>
   </div>
 </header>
 
+<a class="uma-disclaimer-bar" href="#/disclaimer">
+  <span class="uma-disclaimer-tag">デモ</span>
+  <span class="uma-disclaimer-text">架空サイトです。<b>JRA等の実在の団体とは無関係</b>で、馬名・騎手名も架空です。</span>
+  <span class="uma-disclaimer-link">詳しく ›</span>
+</a>
+
 <main class="sp-main" id="view"></main>
 
 <footer class="sp-footer">
-  ウマチケはテスト・検証用の架空サイトです。<br>
-  実在の競馬場・競走・団体とは一切関係ありません。<br>
-  <span style="display:inline-block;margin-top:6px">
+  <div class="uma-footer-disclaimer">
+    ウマチケはテスト・検証用の<b>架空のデモサイト</b>です。<br>
+    <b>日本中央競馬会（JRA）および地方競馬全国協会（NAR）、<br>その他実在のいかなる団体とも関係がありません。</b><br>
+    競馬場名・レース名・競走馬名・騎手名・調教師名・<br>オッズ・払戻金はすべて架空です。<br>
+    実際の馬券購入はできません。
+  </div>
+  <div style="margin-top:8px">
+    <a href="#/disclaimer">免責事項</a>｜<a href="#/help">ヘルプ</a>
+  </div>
+  <div style="margin-top:6px">
     <a href="../pc/index.html?device=pc">PC版</a>｜
     <a href="../tablet/index.html?device=tablet">タブレット版</a>｜
     <a href="../index.html?select=1">端末選択</a>
-  </span>
+  </div>
 </footer>
 
 <nav class="sp-tabbar" id="sp-tabbar">

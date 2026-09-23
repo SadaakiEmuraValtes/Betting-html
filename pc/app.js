@@ -72,8 +72,8 @@
     if (u) {
       $('#hd-balance-box').style.display = '';
       $('#hd-balance').textContent = yen(u.balance);
-      $('#hd-user').innerHTML = '<b>' + esc(u.name) + '</b> 様<br>' +
-        '<a href="#/mypage">マイページ</a> / <a href="#" id="hd-logout">ログアウト</a>';
+      $('#hd-user').innerHTML = '<b class="uma-user-name">' + esc(u.name) + '</b> 様<br>' +
+        '<a href="#/mypage">マイページ</a> / <a href="#" id="hd-logout" class="uma-logout">ログアウト</a>';
       $('#hd-logout').addEventListener('click', function (e) {
         e.preventDefault();
         S.logout();
@@ -83,8 +83,8 @@
       });
     } else {
       $('#hd-balance-box').style.display = 'none';
-      $('#hd-user').innerHTML = '<button class="pc-btn-login" id="hd-login">ログイン</button>' +
-        '<div style="margin-top:4px"><a href="#/register">新規会員登録</a></div>';
+      $('#hd-user').innerHTML = '<button class="pc-btn-login uma-login-nav" id="hd-login">ログイン</button>' +
+        '<div style="margin-top:4px"><a href="#/register" class="uma-register-nav">新規会員登録</a></div>';
       $('#hd-login').addEventListener('click', function () { location.hash = '#/login'; });
     }
 
@@ -135,6 +135,7 @@
       case 'login': markNav(''); return viewLogin();
       case 'register': markNav(''); return viewRegister();
       case 'help': markNav('help'); return viewHelp();
+      case 'disclaimer': markNav('disclaimer'); return viewDisclaimer();
       default: markNav(''); view.innerHTML = '<div class="panel"><div class="empty">ページが見つかりません。</div></div>';
     }
   }
@@ -168,11 +169,11 @@
       html += '<tr><th class="vname" style="background:' + v.color + '">' + v.name + '</th>';
       D.venueRaces(v.idx).forEach(function (race) {
         var st = S.raceStatus(race);
-        html += '<td><a class="race-cell is-' + st + (race.grade ? ' is-grade' : '') +
-          '" href="#/race/' + race.key + '">' +
-          '<span class="r">' + race.round + 'R</span>' +
-          '<span class="t">' + race.startTime + '</span>' +
-          '<span class="s">' + S.STATUS_LABEL[st] + '</span></a></td>';
+        html += '<td><a class="race-cell uma-race-link is-' + st + (race.grade ? ' is-grade' : '') +
+          '" href="#/race/' + race.key + '" data-race-key="' + race.key + '" data-status="' + st + '">' +
+          '<span class="r uma-race-round">' + race.round + 'R</span>' +
+          '<span class="t uma-race-start">' + race.startTime + '</span>' +
+          '<span class="s uma-race-status">' + S.STATUS_LABEL[st] + '</span></a></td>';
       });
       html += '</tr>';
     });
@@ -187,16 +188,17 @@
       '</tr></thead><tbody>';
     D.featuredRaces().forEach(function (race) {
       var st = S.raceStatus(race);
-      html += '<tr>' +
-        '<td><b style="color:' + race.venueColor + '">' + race.label + '</b></td>' +
-        '<td>' + race.startTime + '</td>' +
-        '<td>' + (race.grade ? '<span class="badge badge-grade">' + race.grade + '</span> ' : '') +
+      html += '<tr class="uma-featured-row" data-race-key="' + race.key + '">' +
+        '<td><b class="uma-race-label" style="color:' + race.venueColor + '">' + race.label + '</b></td>' +
+        '<td class="uma-race-start">' + race.startTime + '</td>' +
+        '<td class="uma-race-name">' + (race.grade ? '<span class="badge badge-grade uma-race-grade">' + race.grade + '</span> ' : '') +
         esc(race.name) + '</td>' +
-        '<td>' + race.courseLabel + '</td>' +
-        '<td class="center">' + race.count + '頭</td>' +
-        '<td class="center">' + statusBadge(st) + '</td>' +
-        '<td class="center"><a class="btn btn-sm ' + (st === 'onsale' ? 'btn-main' : 'btn-ghost') +
-        '" href="#/race/' + race.key + '">' + (st === 'onsale' ? '投票する' : '詳細') + '</a></td>' +
+        '<td class="uma-race-course">' + race.courseLabel + '</td>' +
+        '<td class="center uma-race-count">' + race.count + '頭</td>' +
+        '<td class="center uma-race-status">' + statusBadge(st) + '</td>' +
+        '<td class="center"><a class="btn btn-sm uma-race-link ' + (st === 'onsale' ? 'btn-main' : 'btn-ghost') +
+        '" href="#/race/' + race.key + '" data-race-key="' + race.key + '">' +
+        (st === 'onsale' ? '投票する' : '詳細') + '</a></td>' +
         '</tr>';
     });
     html += '</tbody></table></div></div>';
@@ -219,16 +221,19 @@
     var st = S.raceStatus(race);
 
     var html =
-      '<div class="race-hero">' +
-      '<div class="rno" style="background:' + race.venueColor + '"><b>' + race.round + '</b><span>R</span></div>' +
-      '<div><h1>' + (race.grade ? '<span class="badge badge-grade">' + race.grade + '</span> ' : '') + esc(race.name) + '</h1>' +
-      '<div class="meta">' + D.RACE_DATE_LABEL + '　' + race.venueName + '　発走 ' + race.startTime +
-      '　' + race.courseLabel + '　' + race.count + '頭立て</div></div>' +
-      '<div class="right">' + statusBadge(st) +
+      '<div class="race-hero uma-race-head" data-race-key="' + race.key + '">' +
+      '<div class="rno" style="background:' + race.venueColor + '"><b class="uma-race-round">' + race.round + '</b><span>R</span></div>' +
+      '<div><h1 class="uma-race-name">' +
+      (race.grade ? '<span class="badge badge-grade uma-race-grade">' + race.grade + '</span> ' : '') + esc(race.name) + '</h1>' +
+      '<div class="meta">' + D.RACE_DATE_LABEL + '　<span class="uma-race-venue">' + race.venueName + '</span>' +
+      '　発走 <span class="uma-race-start">' + race.startTime + '</span>' +
+      '　<span class="uma-race-course">' + race.courseLabel + '</span>' +
+      '　<span class="uma-race-count">' + race.count + '頭立て</span></div></div>' +
+      '<div class="right"><span class="uma-race-status">' + statusBadge(st) + '</span>' +
       '<div style="font-size:11px;color:#6b7a72;margin-top:6px">現在時刻 ' + S.nowLabel() + '</div></div>' +
       '</div>';
 
-    html += '<div class="tabs">' +
+    html += '<div class="tabs uma-race-tabs">' +
       tabLink(key, 'entries', '出馬表・投票', tab) +
       tabLink(key, 'odds', 'オッズ', tab) +
       tabLink(key, 'result', '結果・払戻', tab) +
@@ -257,7 +262,8 @@
   }
 
   function tabLink(key, id, label, cur) {
-    return '<a class="' + (cur === id ? 'on' : '') + '" href="#/race/' + key + '?tab=' + id + '">' + label + '</a>';
+    return '<a class="uma-race-tab uma-tab-' + id + ' ' + (cur === id ? 'on' : '') +
+      '" href="#/race/' + key + '?tab=' + id + '" data-tab="' + id + '">' + label + '</a>';
   }
 
   /* -------------------- 出馬表 */
@@ -268,7 +274,7 @@
     var nagashi = ui.methodId === 'nagashi' && t.size > 1;
     var result = st === 'confirmed' ? D.getResult(race.key) : null;
 
-    var head = '<table class="table entry-table"><thead><tr>';
+    var head = '<table class="table entry-table uma-entry-table"><thead><tr>';
     head += nagashi ? '<th class="center" style="width:92px">軸 / 相手</th>' : '<th class="center" style="width:56px">選択</th>';
     head += '<th style="width:38px">枠</th><th style="width:42px">馬番</th><th>馬名</th>' +
       '<th style="width:48px">性齢</th><th style="width:92px">騎手</th>' +
@@ -283,25 +289,27 @@
       var cell;
       if (nagashi) {
         cell = '<td class="pick2">' +
-          '<button class="pick-btn axis ' + (isAxis ? 'on' : '') + '" data-axis="' + h.num + '">軸</button> ' +
-          '<button class="pick-btn ' + (picked ? 'on' : '') + '" data-pick="' + h.num + '">相</button></td>';
+          '<button class="pick-btn axis uma-entry-axis ' + (isAxis ? 'on' : '') + '" data-axis="' + h.num + '">軸</button> ' +
+          '<button class="pick-btn uma-entry-pick ' + (picked ? 'on' : '') + '" data-pick="' + h.num + '">相</button></td>';
       } else {
-        cell = '<td class="pick"><button class="pick-btn ' + (picked ? 'on' : '') + '" data-pick="' + h.num + '">' +
+        cell = '<td class="pick"><button class="pick-btn uma-entry-pick ' + (picked ? 'on' : '') + '" data-pick="' + h.num + '">' +
           (picked ? '✓' : '＋') + '</button>' +
-          (order ? '<span class="pick-order">' + order + '着</span>' : '') + '</td>';
+          (order ? '<span class="pick-order uma-entry-order">' + order + '着</span>' : '') + '</td>';
       }
       var pos = result ? result.order.indexOf(h.num) + 1 : 0;
-      return '<tr class="' + (picked || isAxis ? 'selected' : '') + '">' + cell +
-        '<td><span class="' + wakuClass(h.waku) + '">' + h.waku + '</span></td>' +
-        '<td><span class="horse-num">' + h.num + '</span></td>' +
-        '<td class="hname"><b>' + esc(h.name) + '</b><div class="hsub">' +
-        h.weight + '.0kg　' + h.bodyWeight + 'kg(' + (h.bodyDiff >= 0 ? '+' : '') + h.bodyDiff + ')　' +
-        esc(h.trainer) + '</div></td>' +
-        '<td>' + h.sex + h.age + '</td>' +
-        '<td class="hjockey">' + esc(h.jockey) + '</td>' +
-        '<td class="num ' + (h.odds < 10 ? 'odds-hot' : '') + '">' + h.odds.toFixed(1) + '</td>' +
-        '<td class="center">' + h.popularity + '</td>' +
-        (result ? '<td class="center ' + (pos <= 3 ? 'pos-' + pos : '') + '">' + pos + '</td>' : '') +
+      return '<tr class="uma-entry-row ' + (picked || isAxis ? 'selected' : '') + '"' +
+        ' data-horse="' + h.num + '" data-selected="' + (picked || isAxis ? '1' : '0') + '">' + cell +
+        '<td><span class="uma-entry-waku ' + wakuClass(h.waku) + '">' + h.waku + '</span></td>' +
+        '<td><span class="horse-num uma-entry-num">' + h.num + '</span></td>' +
+        '<td class="hname"><b class="uma-entry-name">' + esc(h.name) + '</b><div class="hsub">' +
+        '<span class="uma-entry-weight">' + h.weight + '.0kg</span>　' +
+        '<span class="uma-entry-bodyweight">' + h.bodyWeight + 'kg(' + (h.bodyDiff >= 0 ? '+' : '') + h.bodyDiff + ')</span>　' +
+        '<span class="uma-entry-trainer">' + esc(h.trainer) + '</span></div></td>' +
+        '<td class="uma-entry-sexage">' + h.sex + h.age + '</td>' +
+        '<td class="hjockey uma-entry-jockey">' + esc(h.jockey) + '</td>' +
+        '<td class="num uma-entry-odds ' + (h.odds < 10 ? 'odds-hot' : '') + '">' + h.odds.toFixed(1) + '</td>' +
+        '<td class="center uma-entry-pop">' + h.popularity + '</td>' +
+        (result ? '<td class="center uma-entry-rank ' + (pos <= 3 ? 'pos-' + pos : '') + '">' + pos + '</td>' : '') +
         '</tr>';
     }).join('');
 
@@ -353,18 +361,20 @@
     var user = S.currentUser();
     var total = combos.length * ui.amount;
 
-    var html = '<div class="bet-panel"><h3>投票（馬券購入）</h3>';
+    var html = '<div class="bet-panel uma-bet-panel"><h3>投票（馬券購入）</h3>';
 
-    html += '<div class="sec"><label>式別</label><div class="chips">' +
+    html += '<div class="sec"><label>式別</label><div class="chips uma-bet-types">' +
       D.BET_TYPES.map(function (x) {
-        return '<button class="chip ' + (x.id === ui.typeId ? 'on' : '') + '" data-type="' + x.id + '">' + x.name + '</button>';
+        return '<button class="chip uma-bet-type ' + (x.id === ui.typeId ? 'on' : '') +
+          '" data-type="' + x.id + '">' + x.name + '</button>';
       }).join('') + '</div>' +
       '<div style="font-size:11px;color:#6b7a72;margin-top:6px">' + t.desc + '</div></div>';
 
     if (t.size > 1) {
-      html += '<div class="sec"><label>方式</label><div class="chips">' +
+      html += '<div class="sec"><label>方式</label><div class="chips uma-bet-methods">' +
         D.BET_METHODS.map(function (m) {
-          return '<button class="chip ' + (m.id === ui.methodId ? 'on' : '') + '" data-method="' + m.id + '">' + m.name + '</button>';
+          return '<button class="chip uma-bet-method ' + (m.id === ui.methodId ? 'on' : '') +
+            '" data-method="' + m.id + '">' + m.name + '</button>';
         }).join('') + '</div>' +
         '<div style="font-size:11px;color:#6b7a72;margin-top:6px">' +
         (D.BET_METHODS.filter(function (m) { return m.id === ui.methodId; })[0] || {}).desc +
@@ -373,19 +383,21 @@
     }
 
     html += '<div class="sec"><label>選択中の馬</label>' +
-      '<div style="font-size:12px">' +
-      (ui.axis.length ? '<div>軸：' + ui.axis.map(chipNum).join(' ') + '</div>' : '') +
-      (ui.picks.length ? '<div>' + (ui.methodId === 'nagashi' ? '相手：' : '') + ui.picks.map(chipNum).join(' ') + '</div>'
+      '<div style="font-size:12px" class="uma-bet-picks">' +
+      (ui.axis.length ? '<div class="uma-bet-axis-list">軸：' + ui.axis.map(chipNum).join(' ') + '</div>' : '') +
+      (ui.picks.length ? '<div class="uma-bet-pick-list">' + (ui.methodId === 'nagashi' ? '相手：' : '') +
+        ui.picks.map(chipNum).join(' ') + '</div>'
         : '<div style="color:#6b7a72">出馬表から馬を選択してください</div>') +
       '</div>' +
-      '<button class="btn btn-ghost btn-sm" style="margin-top:8px" data-clear="1">選択をクリア</button></div>';
+      '<button class="btn btn-ghost btn-sm uma-bet-clear" style="margin-top:8px" data-clear="1">選択をクリア</button></div>';
 
-    html += '<div class="sec"><label>買い目（' + combos.length + '点）</label>';
+    html += '<div class="sec"><label>買い目（<span class="uma-bet-count">' + combos.length + '</span>点）</label>';
     if (combos.length) {
-      html += '<div class="combo-list"><table>' +
+      html += '<div class="combo-list uma-bet-combos"><table>' +
         combos.slice(0, 200).map(function (c) {
-          return '<tr><td>' + B.comboLabel(ui.typeId, c) + '</td>' +
-            '<td class="o">' + B.oddsFor(race, ui.typeId, c).toFixed(1) + '倍</td></tr>';
+          return '<tr class="uma-bet-combo" data-combo="' + c.join('-') + '">' +
+            '<td class="uma-bet-combo-label">' + B.comboLabel(ui.typeId, c) + '</td>' +
+            '<td class="o uma-bet-combo-odds">' + B.oddsFor(race, ui.typeId, c).toFixed(1) + '倍</td></tr>';
         }).join('') +
         (combos.length > 200 ? '<tr><td colspan="2" style="color:#6b7a72">ほか ' + (combos.length - 200) + ' 点</td></tr>' : '') +
         '</table></div>';
@@ -395,27 +407,28 @@
     html += '</div>';
 
     html += '<div class="sec"><label>1点あたりの金額</label>' +
-      '<input type="number" id="bet-amount" value="' + ui.amount + '" min="100" step="100" max="100000">' +
+      '<input type="number" id="bet-amount" class="uma-bet-amount" value="' + ui.amount + '" min="100" step="100" max="100000">' +
       '<div class="chips" style="margin-top:7px">' +
       [100, 500, 1000, 5000, 10000].map(function (a) {
-        return '<button class="chip" data-amount="' + a + '">' + B.num(a) + '円</button>';
+        return '<button class="chip uma-bet-amount-chip" data-amount="' + a + '">' + B.num(a) + '円</button>';
       }).join('') + '</div></div>';
 
-    html += '<div class="sec">' +
-      '<div class="bet-total"><span>点数</span><b>' + combos.length + ' 点</b></div>' +
-      '<div class="bet-total"><span>1点あたり</span><b>' + yen(ui.amount) + '</b></div>' +
-      '<div class="bet-total grand"><span>合計金額</span><b>' + yen(total) + '</b></div>' +
-      (user ? '<div class="bet-total" style="color:#6b7a72"><span>購入後の残高</span><span>' +
-        yen(user.balance - total) + '</span></div>' : '') +
+    html += '<div class="sec uma-bet-summary">' +
+      '<div class="bet-total"><span>点数</span><b class="uma-bet-count">' + combos.length + ' 点</b></div>' +
+      '<div class="bet-total"><span>1点あたり</span><b class="uma-bet-unit">' + yen(ui.amount) + '</b></div>' +
+      '<div class="bet-total grand"><span>合計金額</span><b class="uma-bet-total">' + yen(total) + '</b></div>' +
+      (user ? '<div class="bet-total" style="color:#6b7a72"><span>購入後の残高</span>' +
+        '<span class="uma-bet-after">' + yen(user.balance - total) + '</span></div>' : '') +
       '</div>';
 
     html += '<div class="sec" style="border-bottom:0">';
     if (st !== 'onsale') {
-      html += '<div class="msg msg-info" style="margin:0">このレースは' + S.STATUS_LABEL[st] + 'のため購入できません。</div>';
+      html += '<div class="msg msg-info uma-bet-closed" style="margin:0">このレースは' +
+        S.STATUS_LABEL[st] + 'のため購入できません。</div>';
     } else if (!user) {
-      html += '<a class="btn btn-gold btn-block" href="#/login">ログインして投票する</a>';
+      html += '<a class="btn btn-gold btn-block uma-bet-login" href="#/login">ログインして投票する</a>';
     } else {
-      html += '<button class="btn btn-main btn-block btn-lg" id="bet-go"' +
+      html += '<button class="btn btn-main btn-block btn-lg uma-bet-submit" id="bet-go"' +
         (combos.length ? '' : ' disabled') + '>購入内容を確認する</button>';
     }
     html += '</div></div>';
@@ -515,21 +528,21 @@
       '<div class="msg msg-info" style="margin-top:14px">購入後の取り消しはできません。内容をご確認ください。</div>';
 
     modal('購入内容の確認', body,
-      '<button class="btn btn-ghost" data-close="1">キャンセル</button>' +
-      '<button class="btn btn-main btn-lg" id="do-bet">この内容で購入する</button>');
+      '<button class="btn btn-ghost uma-bet-cancel" data-close="1">キャンセル</button>' +
+      '<button class="btn btn-main btn-lg uma-bet-confirm" id="do-bet">この内容で購入する</button>');
 
     $('#do-bet').addEventListener('click', function () {
       var res = S.placeBet(race.key, ui.typeId, ui.methodId, combos, ui.amount);
       if (!res.ok) { closeModal(); toast(res.error, true); return; }
       ui.picks = []; ui.axis = [];
       modal('購入が完了しました',
-        '<div class="msg msg-ok">馬券の購入が完了しました。</div>' +
-        '<table class="table"><tbody>' +
-        '<tr><th style="width:130px">受付番号</th><td style="font-family:monospace">' + res.bet.id + '</td></tr>' +
-        '<tr><th>レース</th><td>' + race.label + '　' + esc(race.name) + '</td></tr>' +
-        '<tr><th>式別</th><td>' + res.bet.typeName + '（' + res.bet.methodName + '）</td></tr>' +
-        '<tr><th>点数 / 合計</th><td>' + res.bet.combos.length + '点 / ' + yen(res.bet.total) + '</td></tr>' +
-        '<tr><th>購入後残高</th><td><b>' + yen(res.balance) + '</b></td></tr>' +
+        '<div class="msg msg-ok uma-bet-done">馬券の購入が完了しました。</div>' +
+        '<table class="table uma-bet-receipt"><tbody>' +
+        '<tr><th style="width:130px">受付番号</th><td class="uma-bet-receipt-id" style="font-family:monospace">' + res.bet.id + '</td></tr>' +
+        '<tr><th>レース</th><td class="uma-bet-receipt-race">' + race.label + '　' + esc(race.name) + '</td></tr>' +
+        '<tr><th>式別</th><td class="uma-bet-receipt-type">' + res.bet.typeName + '（' + res.bet.methodName + '）</td></tr>' +
+        '<tr><th>点数 / 合計</th><td class="uma-bet-receipt-total">' + res.bet.combos.length + '点 / ' + yen(res.bet.total) + '</td></tr>' +
+        '<tr><th>購入後残高</th><td><b class="uma-bet-receipt-balance">' + yen(res.balance) + '</b></td></tr>' +
         '</tbody></table>',
         '<button class="btn btn-ghost" data-close="1">続けて投票する</button>' +
         '<button class="btn btn-main" id="to-history">投票履歴を見る</button>');
@@ -550,10 +563,12 @@
       '<th class="num" style="width:90px">単勝</th><th class="num" style="width:90px">複勝</th>' +
       '<th class="center" style="width:60px">人気</th></tr></thead><tbody>' +
       hs.map(function (h) {
-        return '<tr><td><span class="horse-num">' + h.num + '</span></td><td>' + esc(h.name) + '</td>' +
-          '<td class="num ' + (h.odds < 10 ? 'odds-hot' : '') + '">' + h.odds.toFixed(1) + '</td>' +
-          '<td class="num">' + h.fukuOdds.toFixed(1) + '</td>' +
-          '<td class="center">' + h.popularity + '</td></tr>';
+        return '<tr class="uma-odds-row" data-horse="' + h.num + '">' +
+          '<td><span class="horse-num uma-odds-num">' + h.num + '</span></td>' +
+          '<td class="uma-odds-name">' + esc(h.name) + '</td>' +
+          '<td class="num uma-odds-win ' + (h.odds < 10 ? 'odds-hot' : '') + '">' + h.odds.toFixed(1) + '</td>' +
+          '<td class="num uma-odds-place">' + h.fukuOdds.toFixed(1) + '</td>' +
+          '<td class="center uma-odds-pop">' + h.popularity + '</td></tr>';
       }).join('') + '</tbody></table></div>';
 
     // 馬連マトリクス
@@ -600,20 +615,24 @@
       '<th style="width:110px">騎手</th><th class="num" style="width:80px">単勝</th></tr></thead><tbody>';
     res.order.forEach(function (n, i) {
       var h = race.horses[n - 1];
-      html += '<tr><td class="center ' + (i < 3 ? 'pos-' + (i + 1) : '') + '"><b>' + (i + 1) + '</b></td>' +
-        '<td><span class="' + wakuClass(h.waku) + '">' + h.waku + '</span></td>' +
-        '<td><span class="horse-num">' + h.num + '</span></td>' +
-        '<td>' + esc(h.name) + '</td><td>' + esc(h.jockey) + '</td>' +
-        '<td class="num">' + h.odds.toFixed(1) + '</td></tr>';
+      html += '<tr class="uma-result-row" data-rank="' + (i + 1) + '" data-horse="' + h.num + '">' +
+        '<td class="center uma-result-rank ' + (i < 3 ? 'pos-' + (i + 1) : '') + '"><b>' + (i + 1) + '</b></td>' +
+        '<td><span class="uma-result-waku ' + wakuClass(h.waku) + '">' + h.waku + '</span></td>' +
+        '<td><span class="horse-num uma-result-num">' + h.num + '</span></td>' +
+        '<td class="uma-result-name">' + esc(h.name) + '</td>' +
+        '<td class="uma-result-jockey">' + esc(h.jockey) + '</td>' +
+        '<td class="num uma-result-odds">' + h.odds.toFixed(1) + '</td></tr>';
     });
     html += '</tbody></table></div>';
 
     html += '<h2 style="border-top:1px solid #d9e2dc">払戻金（100円あたり）</h2><div class="panel-body" style="padding:0">' +
-      '<table class="table"><thead><tr><th style="width:110px">式別</th><th style="width:140px">組み合わせ</th>' +
+      '<table class="table uma-payout-table"><thead><tr><th style="width:110px">式別</th><th style="width:140px">組み合わせ</th>' +
       '<th class="num">払戻金</th></tr></thead><tbody>' +
       B.racePayouts(race.key).map(function (p) {
-        return '<tr><td>' + p.type + '</td><td><b>' + p.label + '</b></td>' +
-          '<td class="num" style="font-weight:700">' + yen(p.payout) + '</td></tr>';
+        return '<tr class="uma-payout-row" data-type="' + p.type + '" data-combo="' + p.combo.join('-') + '">' +
+          '<td class="uma-payout-type">' + p.type + '</td>' +
+          '<td><b class="uma-payout-combo">' + p.label + '</b></td>' +
+          '<td class="num uma-payout-amount" style="font-weight:700">' + yen(p.payout) + '</td></tr>';
       }).join('') + '</tbody></table></div>';
 
     var mine = S.betsFor(race.key);
@@ -631,16 +650,16 @@
     var sm = S.summary();
     var html = '<div class="pc-page-head"><h1>投票履歴</h1><p>' + esc(u.name) + ' 様の購入履歴</p></div>';
 
-    html += '<div class="stat-row">' +
-      stat('購入点数', sm.count + ' 件') +
-      stat('購入金額', yen(sm.total)) +
-      stat('払戻金額', yen(sm.payout)) +
-      stat('収支', (sm.profit >= 0 ? '+' : '−') + yen(Math.abs(sm.profit)), sm.profit >= 0 ? 'plus' : 'minus') +
-      stat('的中率', sm.hitRate + ' %') +
+    html += '<div class="stat-row uma-summary">' +
+      stat('購入点数', sm.count + ' 件', '', 'count') +
+      stat('購入金額', yen(sm.total), '', 'total') +
+      stat('払戻金額', yen(sm.payout), '', 'payout') +
+      stat('収支', (sm.profit >= 0 ? '+' : '−') + yen(Math.abs(sm.profit)), sm.profit >= 0 ? 'plus' : 'minus', 'profit') +
+      stat('的中率', sm.hitRate + ' %', '', 'hitrate') +
       '</div>';
 
     html += '<div class="panel"><h2>購入した馬券' +
-      '<span><select id="hist-filter" style="width:auto;padding:5px 8px">' +
+      '<span><select id="hist-filter" class="uma-history-filter" style="width:auto;padding:5px 8px">' +
       '<option value="all">すべて</option><option value="pending">未確定</option>' +
       '<option value="hit">的中</option><option value="lose">不的中</option></select></span></h2>' +
       '<div class="panel-body" id="hist-body"></div></div>';
@@ -658,31 +677,40 @@
     draw();
   }
 
-  function stat(k, v, cls) {
-    return '<div class="stat"><div class="k">' + k + '</div><div class="v ' + (cls || '') + '">' + v + '</div></div>';
+  function stat(k, v, cls, key) {
+    return '<div class="stat' + (key ? ' uma-summary-' + key : '') + '">' +
+      '<div class="k">' + k + '</div>' +
+      '<div class="v ' + (cls || '') + (key ? ' uma-summary-' + key + '-value' : '') + '">' + v + '</div></div>';
   }
 
   function betCardHtml(b) {
-    var badge = b.status === 'hit' ? '<span class="badge badge-hit">的中</span>'
-      : b.status === 'lose' ? '<span class="badge badge-lose">不的中</span>'
-        : '<span class="badge badge-pending">未確定</span>';
+    var badge = b.status === 'hit' ? '<span class="badge badge-hit uma-bet-status">的中</span>'
+      : b.status === 'lose' ? '<span class="badge badge-lose uma-bet-status">不的中</span>'
+        : '<span class="badge badge-pending uma-bet-status">未確定</span>';
     var hitKeys = {};
     (b.hitCombos || []).forEach(function (c) { hitKeys[c.join('-')] = 1; });
 
-    return '<div class="bet-card"><div class="hd">' + badge +
-      '<a href="#/race/' + b.raceKey + '?tab=result"><b>' + b.raceLabel + '</b> ' + esc(b.raceName) + '</a>' +
+    return '<div class="bet-card uma-bet-item" data-bet-id="' + b.id + '" data-status="' + b.status +
+      '" data-race-key="' + b.raceKey + '"><div class="hd">' + badge +
+      '<a class="uma-bet-race" href="#/race/' + b.raceKey + '?tab=result">' +
+      '<b class="uma-bet-race-label">' + b.raceLabel + '</b> ' +
+      '<span class="uma-bet-race-name">' + esc(b.raceName) + '</span></a>' +
       '<span style="color:#6b7a72">発走 ' + b.startTime + '</span>' +
-      '<span class="id">' + b.id + '</span></div>' +
+      '<span class="id uma-bet-id">' + b.id + '</span></div>' +
       '<div class="bd"><div class="combos">' +
-      '<div style="margin-bottom:6px"><b>' + b.typeName + '</b>　' + b.methodName + '　' + b.combos.length + '点</div>' +
+      '<div style="margin-bottom:6px"><b class="uma-bet-type-name">' + b.typeName + '</b>　' +
+      '<span class="uma-bet-method-name">' + b.methodName + '</span>　' +
+      '<span class="uma-bet-count">' + b.combos.length + '点</span></div>' +
       b.combos.map(function (c) {
-        return '<span class="' + (hitKeys[c.join('-')] ? 'hit' : '') + '">' + B.comboLabel(b.typeId, c) + '</span>';
+        return '<span class="uma-bet-combo ' + (hitKeys[c.join('-')] ? 'hit' : '') +
+          '" data-combo="' + c.join('-') + '">' + B.comboLabel(b.typeId, c) + '</span>';
       }).join('') + '</div>' +
       '<div class="amount">' +
-      '<dl><dt>1点あたり</dt><dd>' + yen(b.amountPerCombo) + '</dd></dl>' +
-      '<dl><dt>購入金額</dt><dd>' + yen(b.total) + '</dd></dl>' +
-      '<dl><dt>払戻金</dt><dd class="' + (b.payout ? 'pay' : '') + '">' + yen(b.payout) + '</dd></dl>' +
-      '<dl style="color:#6b7a72;font-size:11px"><dt>購入日時</dt><dd style="font-weight:400">' + b.createdAt + '</dd></dl>' +
+      '<dl><dt>1点あたり</dt><dd class="uma-bet-unit">' + yen(b.amountPerCombo) + '</dd></dl>' +
+      '<dl><dt>購入金額</dt><dd class="uma-bet-total">' + yen(b.total) + '</dd></dl>' +
+      '<dl><dt>払戻金</dt><dd class="uma-bet-payout ' + (b.payout ? 'pay' : '') + '">' + yen(b.payout) + '</dd></dl>' +
+      '<dl style="color:#6b7a72;font-size:11px"><dt>購入日時</dt>' +
+      '<dd class="uma-bet-date" style="font-weight:400">' + b.createdAt + '</dd></dl>' +
       '</div></div></div>';
   }
 
@@ -694,30 +722,32 @@
 
     html += '<div class="panel"><div class="panel-body" style="display:flex;align-items:center;gap:40px">' +
       '<div><div style="font-size:12px;color:#6b7a72">ご購入可能額</div>' +
-      '<div style="font-size:34px;font-weight:800;color:#0f5132">' + yen(u.balance) + '</div></div>' +
+      '<div class="uma-wallet-balance" style="font-size:34px;font-weight:800;color:#0f5132">' + yen(u.balance) + '</div></div>' +
       '<div style="font-size:12.5px;color:#6b7a72;line-height:2">' +
-      '登録口座：' + esc(u.bank) + '<br>' +
+      '登録口座：<span class="uma-wallet-bank">' + esc(u.bank) + '</span><br>' +
       '出金手数料：' + yen(S.WITHDRAW_FEE) + '／回　入金限度額：' + yen(S.MAX_DEPOSIT) + '／回</div>' +
       '</div></div>';
 
-    html += '<div class="tabs">' +
-      '<a class="' + (mode === 'deposit' ? 'on' : '') + '" href="#/wallet?mode=deposit">入金する</a>' +
-      '<a class="' + (mode === 'withdraw' ? 'on' : '') + '" href="#/wallet?mode=withdraw">出金する</a>' +
+    html += '<div class="tabs uma-wallet-tabs">' +
+      '<a class="uma-wallet-tab-deposit ' + (mode === 'deposit' ? 'on' : '') + '" href="#/wallet?mode=deposit">入金する</a>' +
+      '<a class="uma-wallet-tab-withdraw ' + (mode === 'withdraw' ? 'on' : '') + '" href="#/wallet?mode=withdraw">出金する</a>' +
       '</div><div class="panel" style="border-radius:0 8px 8px 8px"><div class="panel-body" id="wallet-form"></div></div>';
 
     html += '<div class="panel"><h2>入出金・購入履歴</h2><div class="panel-body" style="padding:0">' +
-      (u.txns.length ? '<table class="table"><thead><tr>' +
+      (u.txns.length ? '<table class="table uma-txn-table"><thead><tr>' +
         '<th style="width:170px">日時</th><th style="width:110px">区分</th><th>内容</th>' +
         '<th class="num" style="width:130px">金額</th><th class="num" style="width:130px">残高</th>' +
         '</tr></thead><tbody>' +
         u.txns.map(function (t) {
           var sign = t.amount >= 0 ? '+' : '−';
           var color = t.amount >= 0 ? '#157347' : '#b42318';
-          return '<tr><td style="font-size:12px">' + t.createdAt + '</td>' +
-            '<td>' + t.label + '</td><td style="font-size:12.5px">' + esc(t.method || '') +
-            (t.fee ? '<span style="color:#6b7a72">（手数料 ' + yen(t.fee) + '）</span>' : '') + '</td>' +
-            '<td class="num" style="color:' + color + ';font-weight:700">' + sign + yen(Math.abs(t.amount)) + '</td>' +
-            '<td class="num">' + yen(t.balanceAfter) + '</td></tr>';
+          return '<tr class="uma-txn-row" data-txn-type="' + t.type + '">' +
+            '<td class="uma-txn-date" style="font-size:12px">' + t.createdAt + '</td>' +
+            '<td class="uma-txn-label">' + t.label + '</td>' +
+            '<td class="uma-txn-method" style="font-size:12.5px">' + esc(t.method || '') +
+            (t.fee ? '<span class="uma-txn-fee" style="color:#6b7a72">（手数料 ' + yen(t.fee) + '）</span>' : '') + '</td>' +
+            '<td class="num uma-txn-amount" style="color:' + color + ';font-weight:700">' + sign + yen(Math.abs(t.amount)) + '</td>' +
+            '<td class="num uma-txn-balance">' + yen(t.balanceAfter) + '</td></tr>';
         }).join('') + '</tbody></table>'
         : '<div class="empty">入出金履歴はまだありません。</div>') +
       '</div></div>';
@@ -728,23 +758,25 @@
 
   function drawDepositForm() {
     $('#wallet-form').innerHTML =
-      '<div id="wallet-msg"></div>' +
+      '<div class="uma-deposit-form">' +
+      '<div id="wallet-msg" class="uma-form-error"></div>' +
       '<div class="form-row"><label>入金方法<span class="req">必須</span></label><div class="field">' +
       '<div class="inline-radio">' +
       S.DEPOSIT_METHODS.map(function (m, i) {
-        return '<label><input type="radio" name="dep-method" value="' + m.id + '"' + (i === 0 ? ' checked' : '') + '>' +
+        return '<label class="uma-deposit-method" data-method="' + m.id + '">' +
+          '<input type="radio" name="dep-method" value="' + m.id + '"' + (i === 0 ? ' checked' : '') + '>' +
           m.name + '<span style="color:#6b7a72;font-size:11px">（' + m.note + '）</span></label>';
       }).join('') + '</div></div></div>' +
       '<div class="form-row"><label>入金額<span class="req">必須</span></label><div class="field">' +
-      '<input type="number" id="dep-amount" value="10000" step="100" min="1000" max="500000">' +
+      '<input type="number" id="dep-amount" class="uma-deposit-amount" value="10000" step="100" min="1000" max="500000">' +
       '<div class="chips" style="margin-top:8px">' +
       [1000, 5000, 10000, 30000, 50000, 100000].map(function (a) {
-        return '<button type="button" class="chip" data-dep="' + a + '">' + B.num(a) + '円</button>';
+        return '<button type="button" class="chip uma-deposit-amount-chip" data-dep="' + a + '">' + B.num(a) + '円</button>';
       }).join('') + '</div>' +
       '<div class="hint">100円単位／1回あたり ' + yen(S.MIN_DEPOSIT) + '〜' + yen(S.MAX_DEPOSIT) + '</div>' +
       '</div></div>' +
       '<div style="text-align:center;margin-top:18px">' +
-      '<button class="btn btn-main btn-lg" id="dep-go">入金する</button></div>';
+      '<button class="btn btn-main btn-lg uma-deposit-submit" id="dep-go">入金する</button></div></div>';
 
     $$('[data-dep]').forEach(function (b) {
       b.addEventListener('click', function () { $('#dep-amount').value = b.getAttribute('data-dep'); });
@@ -754,11 +786,11 @@
       var res = S.deposit($('#dep-amount').value, m);
       if (!res.ok) { $('#wallet-msg').innerHTML = '<div class="msg msg-err">' + esc(res.error) + '</div>'; return; }
       modal('入金が完了しました',
-        '<div class="msg msg-ok">' + yen(res.amount) + ' を入金しました。</div>' +
-        '<table class="table"><tbody>' +
-        '<tr><th style="width:130px">入金方法</th><td>' + res.method + '</td></tr>' +
-        '<tr><th>入金額</th><td>' + yen(res.amount) + '</td></tr>' +
-        '<tr><th>ご購入可能額</th><td><b style="font-size:18px">' + yen(res.balance) + '</b></td></tr>' +
+        '<div class="msg msg-ok uma-deposit-done">' + yen(res.amount) + ' を入金しました。</div>' +
+        '<table class="table uma-deposit-receipt"><tbody>' +
+        '<tr><th style="width:130px">入金方法</th><td class="uma-deposit-receipt-method">' + res.method + '</td></tr>' +
+        '<tr><th>入金額</th><td class="uma-deposit-receipt-amount">' + yen(res.amount) + '</td></tr>' +
+        '<tr><th>ご購入可能額</th><td><b class="uma-deposit-receipt-balance" style="font-size:18px">' + yen(res.balance) + '</b></td></tr>' +
         '</tbody></table>');
       toast('入金が完了しました');
       render();
@@ -768,21 +800,22 @@
   function drawWithdrawForm() {
     var u = S.currentUser();
     $('#wallet-form').innerHTML =
-      '<div id="wallet-msg"></div>' +
+      '<div class="uma-withdraw-form">' +
+      '<div id="wallet-msg" class="uma-form-error"></div>' +
       '<div class="form-row"><label>出金先口座</label><div class="field">' +
-      '<div style="padding-top:9px">' + esc(u.bank) + '</div>' +
+      '<div class="uma-withdraw-bank" style="padding-top:9px">' + esc(u.bank) + '</div>' +
       '<div class="hint">出金先口座の変更はマイページから行えます（デモのため変更は反映されません）。</div></div></div>' +
       '<div class="form-row"><label>出金額<span class="req">必須</span></label><div class="field">' +
-      '<input type="number" id="wd-amount" value="1000" step="100" min="1000">' +
+      '<input type="number" id="wd-amount" class="uma-withdraw-amount" value="1000" step="100" min="1000">' +
       '<div class="chips" style="margin-top:8px">' +
       [1000, 5000, 10000, 50000].map(function (a) {
-        return '<button type="button" class="chip" data-wd="' + a + '">' + B.num(a) + '円</button>';
+        return '<button type="button" class="chip uma-withdraw-amount-chip" data-wd="' + a + '">' + B.num(a) + '円</button>';
       }).join('') +
-      '<button type="button" class="chip" data-wd="all">全額出金</button></div>' +
+      '<button type="button" class="chip uma-withdraw-all" data-wd="all">全額出金</button></div>' +
       '<div class="hint">100円単位／出金手数料 ' + yen(S.WITHDRAW_FEE) + ' が別途かかります（残高から差し引き）。</div>' +
       '</div></div>' +
       '<div style="text-align:center;margin-top:18px">' +
-      '<button class="btn btn-main btn-lg" id="wd-go">出金する</button></div>';
+      '<button class="btn btn-main btn-lg uma-withdraw-submit" id="wd-go">出金する</button></div></div>';
 
     $$('[data-wd]').forEach(function (b) {
       b.addEventListener('click', function () {
@@ -797,12 +830,12 @@
       var res = S.withdraw($('#wd-amount').value);
       if (!res.ok) { $('#wallet-msg').innerHTML = '<div class="msg msg-err">' + esc(res.error) + '</div>'; return; }
       modal('出金手続きが完了しました',
-        '<div class="msg msg-ok">' + yen(res.amount) + ' の出金手続きを受け付けました。</div>' +
-        '<table class="table"><tbody>' +
-        '<tr><th style="width:130px">出金額</th><td>' + yen(res.amount) + '</td></tr>' +
-        '<tr><th>手数料</th><td>' + yen(res.fee) + '</td></tr>' +
-        '<tr><th>出金先</th><td>' + esc(u.bank) + '</td></tr>' +
-        '<tr><th>ご購入可能額</th><td><b style="font-size:18px">' + yen(res.balance) + '</b></td></tr>' +
+        '<div class="msg msg-ok uma-withdraw-done">' + yen(res.amount) + ' の出金手続きを受け付けました。</div>' +
+        '<table class="table uma-withdraw-receipt"><tbody>' +
+        '<tr><th style="width:130px">出金額</th><td class="uma-withdraw-receipt-amount">' + yen(res.amount) + '</td></tr>' +
+        '<tr><th>手数料</th><td class="uma-withdraw-receipt-fee">' + yen(res.fee) + '</td></tr>' +
+        '<tr><th>出金先</th><td class="uma-withdraw-receipt-bank">' + esc(u.bank) + '</td></tr>' +
+        '<tr><th>ご購入可能額</th><td><b class="uma-withdraw-receipt-balance" style="font-size:18px">' + yen(res.balance) + '</b></td></tr>' +
         '</tbody></table>');
       toast('出金手続きが完了しました');
       render();
@@ -816,23 +849,24 @@
     var sm = S.summary();
     var html = '<div class="pc-page-head"><h1>マイページ</h1><p>会員情報・投票状況の確認</p></div>';
 
-    html += '<div class="stat-row">' +
-      stat('ご購入可能額', yen(u.balance)) +
-      stat('購入金額（累計）', yen(sm.total)) +
-      stat('払戻金（累計）', yen(sm.payout)) +
-      stat('収支', (sm.profit >= 0 ? '+' : '−') + yen(Math.abs(sm.profit)), sm.profit >= 0 ? 'plus' : 'minus') +
+    html += '<div class="stat-row uma-summary">' +
+      stat('ご購入可能額', '<span class="uma-wallet-balance">' + yen(u.balance) + '</span>', '', 'balance') +
+      stat('購入金額（累計）', yen(sm.total), '', 'total') +
+      stat('払戻金（累計）', yen(sm.payout), '', 'payout') +
+      stat('収支', (sm.profit >= 0 ? '+' : '−') + yen(Math.abs(sm.profit)), sm.profit >= 0 ? 'plus' : 'minus', 'profit') +
       '</div>';
 
     html += '<div class="panel"><h2>会員情報</h2><div class="panel-body" style="padding:0">' +
-      '<table class="table"><tbody>' +
-      row('会員番号', u.id.toUpperCase()) +
-      row('ユーザーID', u.loginId) +
-      row('お名前', esc(u.name) + '（' + esc(u.kana) + '）') +
-      row('生年月日', u.birthday) +
-      row('メールアドレス', esc(u.email)) +
-      row('電話番号', esc(u.tel)) +
-      row('登録口座', esc(u.bank)) +
-      row('区分', u.registered ? '新規登録ユーザー' : 'テストユーザー（' + esc(u.memo) + '）') +
+      '<table class="table uma-mypage-table"><tbody>' +
+      mrow('memberno', '会員番号', u.id.toUpperCase()) +
+      mrow('loginid', 'ユーザーID', esc(u.loginId)) +
+      mrow('name', 'お名前', esc(u.name)) +
+      mrow('kana', 'フリガナ', esc(u.kana)) +
+      mrow('birthday', '生年月日', u.birthday) +
+      mrow('email', 'メールアドレス', esc(u.email)) +
+      mrow('tel', '電話番号', esc(u.tel)) +
+      mrow('bank', '登録口座', esc(u.bank)) +
+      mrow('type', '区分', u.registered ? '新規登録ユーザー' : 'テストユーザー（' + esc(u.memo) + '）') +
       '</tbody></table></div></div>';
 
     html += '<div class="panel"><h2>最近の投票<span><a href="#/history">すべて見る</a></span></h2>' +
@@ -842,9 +876,9 @@
       '</div></div>';
 
     html += '<div class="panel"><h2>操作</h2><div class="panel-body">' +
-      '<a class="btn btn-main" href="#/wallet?mode=deposit">入金する</a> ' +
-      '<a class="btn btn-ghost" href="#/wallet?mode=withdraw">出金する</a> ' +
-      '<button class="btn btn-danger" id="mp-logout">ログアウト</button>' +
+      '<a class="btn btn-main uma-goto-deposit" href="#/wallet?mode=deposit">入金する</a> ' +
+      '<a class="btn btn-ghost uma-goto-withdraw" href="#/wallet?mode=withdraw">出金する</a> ' +
+      '<button class="btn btn-danger uma-logout" id="mp-logout">ログアウト</button>' +
       '</div></div>';
 
     view.innerHTML = html;
@@ -854,6 +888,13 @@
   }
 
   function row(k, v) { return '<tr><th style="width:190px">' + k + '</th><td>' + v + '</td></tr>'; }
+
+  // マイページの会員情報行（テストから一意に特定できるようクラスを付ける）
+  function mrow(key, k, v) {
+    return '<tr class="uma-mypage-row uma-mypage-' + key + '" data-field="' + key + '">' +
+      '<th style="width:190px" class="uma-mypage-label">' + k + '</th>' +
+      '<td class="uma-mypage-value uma-mypage-' + key + '-value">' + v + '</td></tr>';
+  }
 
   function deviceLabel(d) {
     return { pc: 'PC版', tablet: 'タブレット版', sp: 'スマートフォン版' }[d] || d;
@@ -866,16 +907,16 @@
     view.innerHTML =
       '<div class="pc-page-head"><h1>ログイン</h1><p>会員の方はこちらからログインしてください</p></div>' +
       '<div style="display:flex;gap:18px;align-items:flex-start">' +
-      '<div class="panel" style="flex:1"><h2>ログイン</h2><div class="panel-body">' +
-      '<div id="login-msg"></div>' +
+      '<div class="panel uma-login-form" style="flex:1"><h2>ログイン</h2><div class="panel-body">' +
+      '<div id="login-msg" class="uma-form-error"></div>' +
       '<div class="form-row"><label>ユーザーID<span class="req">必須</span></label>' +
-      '<div class="field"><input type="text" id="lg-id" placeholder="user01" autocomplete="username"></div></div>' +
+      '<div class="field"><input type="text" id="lg-id" class="uma-login-id" placeholder="user01" autocomplete="username"></div></div>' +
       '<div class="form-row"><label>パスワード<span class="req">必須</span></label>' +
-      '<div class="field"><input type="password" id="lg-pw" placeholder="test1234" autocomplete="current-password"></div></div>' +
+      '<div class="field"><input type="password" id="lg-pw" class="uma-login-pw" placeholder="test1234" autocomplete="current-password"></div></div>' +
       '<div style="text-align:center;margin-top:18px">' +
-      '<button class="btn btn-main btn-lg" id="lg-go">ログイン</button></div>' +
+      '<button class="btn btn-main btn-lg uma-login-submit" id="lg-go">ログイン</button></div>' +
       '<div style="text-align:center;margin-top:14px;font-size:12.5px">' +
-      'アカウントをお持ちでない方は <a href="#/register">新規会員登録</a></div>' +
+      'アカウントをお持ちでない方は <a href="#/register" class="uma-register-nav">新規会員登録</a></div>' +
       '</div></div>' +
       '<div class="panel" style="width:430px;flex:0 0 430px"><h2>テストアカウント</h2>' +
       '<div class="panel-body" style="padding:0">' + testUserTable() + '</div></div>' +
@@ -900,13 +941,15 @@
   }
 
   function testUserTable() {
-    return '<table class="table"><thead><tr><th>ID</th><th>お名前</th>' +
+    return '<table class="table uma-testuser-table"><thead><tr><th>ID</th><th>お名前</th>' +
       '<th class="num">残高</th><th></th></tr></thead><tbody>' +
       D.TEST_USERS.map(function (u) {
-        return '<tr><td><code>' + u.loginId + '</code></td><td>' + esc(u.name) +
-          '<div style="font-size:11px;color:#6b7a72">' + esc(u.memo) + '</div></td>' +
-          '<td class="num">' + yen(u.balance) + '</td>' +
-          '<td><button class="btn btn-ghost btn-sm" data-fill="' + u.loginId + '">入力</button></td></tr>';
+        return '<tr class="uma-testuser-row" data-login-id="' + u.loginId + '">' +
+          '<td><code class="uma-testuser-id">' + u.loginId + '</code></td>' +
+          '<td><span class="uma-testuser-name">' + esc(u.name) + '</span>' +
+          '<div class="uma-testuser-memo" style="font-size:11px;color:#6b7a72">' + esc(u.memo) + '</div></td>' +
+          '<td class="num uma-testuser-balance">' + yen(u.balance) + '</td>' +
+          '<td><button class="btn btn-ghost btn-sm uma-testuser-fill" data-fill="' + u.loginId + '">入力</button></td></tr>';
       }).join('') +
       '</tbody></table><div style="padding:10px 14px;font-size:12px;color:#6b7a72">' +
       'パスワードは全アカウント共通で <b>test1234</b> です。</div>';
@@ -917,22 +960,24 @@
   function viewRegister() {
     view.innerHTML =
       '<div class="pc-page-head"><h1>新規会員登録</h1><p>デモサイトのため実在の個人情報は入力しないでください</p></div>' +
-      '<div class="panel"><h2>お客様情報の入力</h2><div class="panel-body">' +
-      '<div id="reg-msg"></div>' +
-      field('ユーザーID', '必須', '<input type="text" id="rg-loginId" placeholder="半角英数字4〜20文字">', '半角英数字とアンダースコアが使用できます。') +
-      field('パスワード', '必須', '<input type="password" id="rg-password" placeholder="8文字以上">', '8文字以上で入力してください。') +
-      field('パスワード（確認）', '必須', '<input type="password" id="rg-passwordConfirm">') +
-      field('お名前', '必須', '<input type="text" id="rg-name" placeholder="競馬 太郎">') +
-      field('フリガナ', '必須', '<input type="text" id="rg-kana" placeholder="ケイバ タロウ">') +
-      field('生年月日', '必須', '<input type="date" id="rg-birthday" value="1990-01-01">', '20歳以上の方のみご登録いただけます。') +
-      field('メールアドレス', '必須', '<input type="email" id="rg-email" placeholder="taro@example.test">') +
-      field('電話番号', '必須', '<input type="tel" id="rg-tel" placeholder="090-0000-0000">') +
-      field('出金先口座', '', '<input type="text" id="rg-bank" placeholder="○○銀行 ○○支店 普通 1234567">', '後から登録することもできます。') +
+      '<div class="panel uma-register-form"><h2>お客様情報の入力</h2><div class="panel-body">' +
+      '<div id="reg-msg" class="uma-form-error"></div>' +
+      field('ユーザーID', '必須', rgInput('loginId', 'text', '半角英数字4〜20文字'), '半角英数字とアンダースコアが使用できます。') +
+      field('パスワード', '必須', rgInput('password', 'password', '8文字以上'), '8文字以上で入力してください。') +
+      field('パスワード（確認）', '必須', rgInput('passwordConfirm', 'password')) +
+      field('お名前', '必須', rgInput('name', 'text', '競馬 太郎')) +
+      field('フリガナ', '必須', rgInput('kana', 'text', 'ケイバ タロウ')) +
+      field('生年月日', '必須', rgInput('birthday', 'date', '', '1990-01-01'), '20歳以上の方のみご登録いただけます。') +
+      field('メールアドレス', '必須', rgInput('email', 'email', 'taro@example.test')) +
+      field('電話番号', '必須', rgInput('tel', 'tel', '090-0000-0000')) +
+      field('出金先口座', '', rgInput('bank', 'text', '○○銀行 ○○支店 普通 1234567'), '後から登録することもできます。') +
       '<div class="form-row"><label>利用規約<span class="req">必須</span></label><div class="field">' +
-      '<label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="rg-agree" style="width:auto">' +
-      '本サイトが架空のデモサイトであることを理解し、利用規約に同意します</label></div></div>' +
+      '<label style="display:flex;gap:8px;align-items:center">' +
+      '<input type="checkbox" id="rg-agree" class="uma-register-agree" style="width:auto">' +
+      '本サイトが架空のデモサイトであり、日本中央競馬会（JRA）等の実在の団体とは無関係であることを理解し、利用規約に同意します</label>' +
+      '</div></div>' +
       '<div style="text-align:center;margin-top:20px">' +
-      '<button class="btn btn-main btn-lg" id="rg-go">この内容で登録する</button></div>' +
+      '<button class="btn btn-main btn-lg uma-register-submit" id="rg-go">この内容で登録する</button></div>' +
       '</div></div>';
 
     $('#rg-go').addEventListener('click', function () {
@@ -948,12 +993,12 @@
         return;
       }
       modal('会員登録が完了しました',
-        '<div class="msg msg-ok">ご登録ありがとうございます。そのままログインしました。</div>' +
-        '<table class="table"><tbody>' +
-        row('会員番号', res.user.id.toUpperCase()) +
-        row('ユーザーID', esc(res.user.loginId)) +
-        row('お名前', esc(res.user.name)) +
-        row('ご購入可能額', '<b>' + yen(res.user.balance) + '</b>（まずは入金してください）') +
+        '<div class="msg msg-ok uma-register-done">ご登録ありがとうございます。そのままログインしました。</div>' +
+        '<table class="table uma-register-receipt"><tbody>' +
+        mrow('memberno', '会員番号', res.user.id.toUpperCase()) +
+        mrow('loginid', 'ユーザーID', esc(res.user.loginId)) +
+        mrow('name', 'お名前', esc(res.user.name)) +
+        mrow('balance', 'ご購入可能額', '<b>' + yen(res.user.balance) + '</b>（まずは入金してください）') +
         '</tbody></table>',
         '<button class="btn btn-ghost" data-close="1">閉じる</button>' +
         '<button class="btn btn-main" id="rg-to-wallet">入金画面へ</button>');
@@ -966,6 +1011,35 @@
   function field(label, req, input, hint) {
     return '<div class="form-row"><label>' + label + (req ? '<span class="req">' + req + '</span>' : '') + '</label>' +
       '<div class="field">' + input + (hint ? '<div class="hint">' + hint + '</div>' : '') + '</div></div>';
+  }
+
+  // 会員登録の入力欄（id と同名のクラスを付けてテストから特定できるようにする）
+  function rgInput(name, type, ph, val) {
+    return '<input type="' + type + '" id="rg-' + name + '" class="uma-register-' + name + '"' +
+      (ph ? ' placeholder="' + ph + '"' : '') + (val ? ' value="' + val + '"' : '') + '>';
+  }
+
+  /* ================================================ 免責事項 */
+
+  function viewDisclaimer() {
+    view.innerHTML =
+      '<div class="pc-page-head"><h1>免責事項</h1><p>ご利用の前に必ずお読みください</p></div>' +
+      '<div class="panel uma-disclaimer-page"><h2>本サイトについて</h2><div class="panel-body">' +
+      '<div class="msg msg-err" style="font-size:14px;font-weight:700">' +
+      '本サイトは架空のデモサイトです。日本中央競馬会（JRA）とは一切関係がありません。</div>' +
+      '<ol class="uma-disclaimer-list" style="padding-left:1.3em;line-height:2">' +
+      D.DISCLAIMER_LINES.map(function (t) { return '<li style="margin-bottom:10px">' + t + '</li>'; }).join('') +
+      '</ol></div></div>' +
+      '<div class="panel"><h2>架空データについて</h2><div class="panel-body" style="padding:0">' +
+      '<table class="table"><tbody>' +
+      row('競馬場', D.VENUES.map(function (v) { return v.name + '（' + v.kana + '）'; }).join(' / ') +
+        '<div style="color:#6b7a72;font-size:12px">いずれも架空の競馬場です。</div>') +
+      row('レース名', '重賞・一般競走を含め、すべて架空のレース名です。') +
+      row('競走馬名', '架空の冠名と語を組み合わせて自動生成しています。') +
+      row('騎手・調教師名', 'すべて架空の人物名です。') +
+      row('オッズ・払戻金', '独自の計算式による架空の数値です。実際の配当とは一切関係ありません。') +
+      row('入出金・馬券購入', '画面上の演出のみで、現実の金銭のやり取りは発生しません。') +
+      '</tbody></table></div></div>';
   }
 
   /* ================================================ ヘルプ */

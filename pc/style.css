@@ -127,6 +127,38 @@ button { font-family: inherit; }
 }
 .pc-btn-login:hover { background: var(--gold-l); }
 
+/* ---------------------------------------------- 免責バー */
+
+.uma-disclaimer-bar {
+  background: #fff8e6;
+  border-bottom: 1px solid #f0dca8;
+  color: #6b5312;
+  font-size: 11.5px;
+  line-height: 1.7;
+}
+.uma-disclaimer-bar {
+  padding: 8px 20px;
+  text-align: center;
+}
+.uma-disclaimer-bar > * { vertical-align: middle; }
+.uma-disclaimer-text {
+  display: inline-block;
+  max-width: 1040px;
+  text-align: left;
+}
+.uma-disclaimer-tag {
+  display: inline-block;
+  background: #b45309;
+  color: #fff;
+  font-weight: 700;
+  border-radius: 3px;
+  padding: 1px 8px;
+  margin-right: 8px;
+  font-size: 11px;
+}
+.uma-disclaimer-text b { color: #92400e; }
+.uma-disclaimer-link { margin-left: 10px; color: #92400e; font-weight: 700; }
+
 /* ---------------------------------------------- レイアウト */
 
 .pc-wrap {

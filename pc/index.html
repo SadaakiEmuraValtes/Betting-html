@@ -16,14 +16,23 @@
     </div>
     <div class="pc-clock">
       <span>現在時刻（仮想）</span>
-      <select id="hd-clock" title="仮想時刻"></select>
+      <select id="hd-clock" class="uma-clock" title="仮想時刻"></select>
     </div>
-    <div class="pc-balance" id="hd-balance-box" style="display:none">
-      ご購入可能額<b id="hd-balance">¥0</b>
+    <div class="pc-balance uma-balance-box" id="hd-balance-box" style="display:none">
+      ご購入可能額<b id="hd-balance" class="uma-balance">¥0</b>
     </div>
     <div class="pc-user" id="hd-user"></div>
   </div>
 </header>
+
+<div class="uma-disclaimer-bar">
+  <span class="uma-disclaimer-tag">デモサイト</span>
+  <span class="uma-disclaimer-text">
+    本サイトはテスト・学習用の<b>架空の競馬投票サイト</b>です。<b>日本中央競馬会（JRA）をはじめ実在の団体とは一切関係ありません。</b>
+    競馬場名・レース名・馬名・騎手名はすべて架空で、実際の馬券購入や金銭のやり取りは発生しません。
+  </span>
+  <a class="uma-disclaimer-link" href="#/disclaimer">免責事項を読む</a>
+</div>
 
 <div class="pc-wrap">
   <aside class="pc-side">
@@ -34,6 +43,7 @@
       <a href="#/wallet" data-nav="wallet"><span class="ic">💰</span>入出金</a>
       <a href="#/mypage" data-nav="mypage"><span class="ic">👤</span>マイページ</a>
       <a href="#/help" data-nav="help"><span class="ic">❓</span>ヘルプ・テスト情報</a>
+      <a href="#/disclaimer" data-nav="disclaimer"><span class="ic">⚠️</span>免責事項</a>
     </nav>
     <div class="pc-side-box">
       <h4>本日の開催</h4>
@@ -53,11 +63,12 @@
   <div class="pc-footer-inner">
     <div class="disc">
       <div>
-        <a href="#/">レース一覧</a><a href="#/wallet">入出金</a><a href="#/mypage">マイページ</a><a href="#/help">ヘルプ</a>
+        <a href="#/">レース一覧</a><a href="#/wallet">入出金</a><a href="#/mypage">マイページ</a><a href="#/help">ヘルプ</a><a href="#/disclaimer">免責事項</a>
       </div>
-      <div style="margin-top:8px">
-        ウマチケ（UMATIKET）はテスト自動化・UI検証のためのデモサイトです。<br>
-        実在の競馬場・競走馬・騎手・団体とは一切関係がありません。20歳未満の方の投票を模した操作はご遠慮ください。
+      <div style="margin-top:8px" class="uma-footer-disclaimer">
+        ウマチケ（UMATIKET）はテスト自動化・UI検証のための<b>架空のデモサイト</b>です。<br>
+        <b>日本中央競馬会（JRA）および地方競馬全国協会（NAR）、その他実在のいかなる団体とも関係がありません。</b><br>
+        競馬場名・レース名・競走馬名・騎手名・調教師名・オッズ・払戻金はすべて架空のものです。実際の馬券購入はできません。
       </div>
     </div>
     <div class="device-switch">

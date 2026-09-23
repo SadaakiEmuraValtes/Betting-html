@@ -2,8 +2,17 @@
 
 **デモURL: https://sadaakiemuravaltes.github.io/Betting-html/**
 
-テスト自動化・UI検証用に作られた**架空の競馬投票サイト**です。
-実在の競馬場・競走馬・騎手・団体とは一切関係がなく、実際の金銭のやり取りは発生しません。
+> ## ⚠️ 免責事項
+>
+> 本サイトは、テスト自動化・UI検証・学習を目的として作成された**架空の競馬投票デモサイト**です。
+>
+> - **日本中央競馬会（JRA）および地方競馬全国協会（NAR）、その他実在のいかなる団体・企業とも一切関係がありません。** 公式サイトでもなければ、提携・監修・許諾を受けたものでもありません。
+> - 登場する**競馬場名・レース名・競走馬名・騎手名・調教師名・オッズ・払戻金はすべて架空のもの**です。実在の競馬場、競走、競走馬、騎手、調教師、人物、団体とは一切関係がありません。
+> - **実際の馬券の購入はできません。** 入金・出金・投票はすべて画面上の演出であり、現実の金銭のやり取りは一切発生しません。入力された情報はブラウザ内にのみ保存されます。
+> - 本サイトは**投票行為を推奨するものではありません**。実際の公営競技は20歳以上の方のみが法令に従って利用できます。
+> - 本サイトの利用により生じたいかなる損害についても、作成者は責任を負いません。
+>
+> この免責はサイト上でも常時表示しています（全ページ上部の免責バー／フッター／`#/disclaimer` の免責事項ページ）。
 
 最大の特徴は **PC / タブレット / スマートフォンでUIが完全に別物**であることです。
 CSSメディアクエリによるレスポンシブではなく、**端末ごとに別のHTML・CSS・JavaScriptを配信**しています。
@@ -104,7 +113,7 @@ Betting-html/
 - 入出金・購入・払戻をまとめた取引履歴（残高推移つき）
 
 ### 投票（馬券購入）
-- 3競馬場（中山・阪神・新潟）× 12レース = 36レース
+- 3競馬場（**青嶺 / 桜堤 / 鷹丘** — いずれも架空）× 12レース = 36レース
 - 式別7種：単勝 / 複勝 / 馬連 / 馬単 / ワイド / 三連複 / 三連単
 - 買い方3種：通常 / ボックス / ながし
   - 馬単・三連単の「通常」は**選択した順が着順**になります
@@ -165,7 +174,7 @@ Betting-html/
 サーバもDBも持ちませんが、**何度リロードしても、どの端末で開いても同じ内容**になります。
 
 ```
-raceKey = 競馬場インデックス * 100 + ラウンド    例）阪神11R → 111
+raceKey = 競馬場インデックス * 100 + ラウンド    例）桜堤11R → 111
 ```
 
 - 各馬の強さから勝率を正規化し、単勝・複勝オッズを算出
@@ -174,26 +183,91 @@ raceKey = 競馬場インデックス * 100 + ラウンド    例）阪神11R �
 
 ---
 
-## テスト時の目印
+## テスト時の目印（セレクタ）
 
-各端末の `<body>` に `data-device` 属性が付きます（`pc` / `tablet` / `sp`）。
-どの端末のUIを見ているかの判定に利用できます。
+各画面の要素には `uma-` で始まる**テスト用クラス**を付けています。
+**3端末で同じクラス名**を使っているため、UIが違っても同じセレクタでテストを書けます。
+（端末の判別は `<body data-device="pc|tablet|sp">` で行えます）
 
-主なセレクタ（3端末共通のID）:
+### ヘッダー・共通
 
 | 要素 | セレクタ |
 |---|---|
-| 残高表示 | `#hd-balance` |
-| 仮想時刻 | `#hd-clock` |
-| ログインID / パスワード / 実行 | `#lg-id` / `#lg-pw` / `#lg-go` |
-| 会員登録フォーム | `#rg-loginId` ほか `#rg-*`、実行は `#rg-go` |
-| 入金額 / 実行 | `#dep-amount` / `#dep-go` |
-| 出金額 / 実行 | `#wd-amount` / `#wd-go` |
-| 式別・方式の選択 | `[data-type="tan"]` / `[data-method="box"]` |
-| 馬の選択 | PC・タブレット：`[data-pick="1"]`、スマホ：`[data-num="1"]` |
-| 購入実行 | PC：`#bet-go` → `#do-bet`／タブレット：`#bar-buy` → `#do-bet`／スマホ：`#wz-next` → `#wz-buy` |
+| 残高 | `.uma-balance` |
+| 仮想時刻セレクト | `.uma-clock` |
+| ログイン中のユーザー名 | `.uma-user-name` |
+| ログアウト | `.uma-logout` |
+| フォームのエラー表示 | `.uma-form-error` |
+| 免責バー / 免責ページ | `.uma-disclaimer-bar` / `.uma-disclaimer-page` |
 
-画面遷移はハッシュルーティングです。
+### ログイン・会員登録
+
+| 要素 | セレクタ |
+|---|---|
+| ユーザーID / パスワード / 実行 | `.uma-login-id` / `.uma-login-pw` / `.uma-login-submit` |
+| テストアカウント行 | `.uma-testuser-row[data-login-id="user01"]` |
+| ID自動入力ボタン | `.uma-testuser-fill` |
+| 登録フォーム各項目 | `.uma-register-loginId` / `-password` / `-passwordConfirm` / `-name` / `-kana` / `-birthday` / `-email` / `-tel` / `-bank` |
+| 規約同意 / 登録実行 | `.uma-register-agree` / `.uma-register-submit` |
+| 登録完了 | `.uma-register-done` / `.uma-register-receipt` |
+
+### マイページ（ユーザー項目）
+
+| 要素 | セレクタ |
+|---|---|
+| 会員情報の行 | `.uma-mypage-row[data-field="email"]` |
+| 各項目の値 | `.uma-mypage-memberno-value` / `-loginid-` / `-name-` / `-kana-` / `-birthday-` / `-email-` / `-tel-` / `-bank-` / `-type-value` |
+| 残高 | `.uma-wallet-balance` |
+| 集計値 | `.uma-summary-total-value` / `-payout-` / `-profit-` / `-count-` / `-hitrate-value` |
+
+### 入出金
+
+| 要素 | セレクタ |
+|---|---|
+| 入金フォーム | `.uma-deposit-form` |
+| 入金方法 / 金額 / 実行 | `.uma-deposit-method` / `.uma-deposit-amount` / `.uma-deposit-submit` |
+| 入金完了・明細 | `.uma-deposit-done` / `.uma-deposit-receipt-balance` |
+| 出金フォーム | `.uma-withdraw-form` |
+| 出金先 / 金額 / 実行 | `.uma-withdraw-bank` / `.uma-withdraw-amount` / `.uma-withdraw-submit` |
+| 出金完了・明細 | `.uma-withdraw-done` / `.uma-withdraw-receipt-fee` |
+| 取引履歴の行 | `.uma-txn-row[data-txn-type="deposit"]` |
+| 行の各項目 | `.uma-txn-date` / `.uma-txn-label` / `.uma-txn-amount` / `.uma-txn-balance` |
+
+### レース・出馬表
+
+| 要素 | セレクタ |
+|---|---|
+| レースへのリンク | `.uma-race-link[data-race-key="111"]` |
+| レース名 / 状態 / 発走 | `.uma-race-name` / `.uma-race-status` / `.uma-race-start` |
+| タブ | `.uma-tab-entries` / `.uma-tab-odds` / `.uma-tab-result` |
+| 出馬表の行 | `.uma-entry-row[data-horse="5"]` |
+| 行の各項目 | `.uma-entry-waku` / `-num` / `-name` / `-sexage` / `-jockey` / `-odds` / `-pop` |
+| 馬の選択 / 軸 | `.uma-entry-pick` / `.uma-entry-axis` |
+
+### 投票
+
+| 要素 | セレクタ |
+|---|---|
+| 投票パネル | `.uma-bet-panel` |
+| 式別 / 方式 | `.uma-bet-type[data-type="umaren"]` / `.uma-bet-method[data-method="box"]` |
+| 1点あたり金額 | `.uma-bet-amount`（入力）/ `.uma-bet-amount-chip`（ボタン） |
+| 点数 / 合計 / 購入後残高 | `.uma-bet-count` / `.uma-bet-total` / `.uma-bet-after` |
+| 買い目 | `.uma-bet-combo[data-combo="1-3"]` |
+| 購入ボタン | PC・タブレット：`.uma-bet-submit` → `.uma-bet-confirm`<br>スマホ：`.uma-bet-start` → `.uma-bet-next` ×3 → `.uma-bet-confirm` |
+| 購入完了 | `.uma-bet-done` / `.uma-bet-receipt-id` / `.uma-bet-receipt-balance` |
+
+### 投票履歴・結果
+
+| 要素 | セレクタ |
+|---|---|
+| 履歴の1件 | `.uma-bet-item[data-status="hit"]` |
+| 件の各項目 | `.uma-bet-status` / `.uma-bet-race-label` / `.uma-bet-type-name` / `.uma-bet-total` / `.uma-bet-payout` / `.uma-bet-id` |
+| 絞り込み | `.uma-history-filter` |
+| 着順の行 | `.uma-result-row[data-rank="1"]` |
+| 払戻の行 | `.uma-payout-row[data-type="三連単"]` / `.uma-payout-amount` |
+| オッズの行 | `.uma-odds-row[data-horse="3"]` / `.uma-odds-win` / `.uma-odds-place` |
+
+### ルーティング
 
 ```
 #/                     レース一覧
@@ -203,4 +277,7 @@ raceKey = 競馬場インデックス * 100 + ラウンド    例）阪神11R �
 #/mypage               マイページ
 #/login  #/register    ログイン・会員登録
 #/help                 ヘルプ・テスト情報
+#/disclaimer           免責事項
 ```
+
+画面遷移はハッシュルーティングです（3端末とも同じパス）。
