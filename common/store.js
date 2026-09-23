@@ -11,8 +11,13 @@
   var D = global.UmaData;
   var B = global.UmaBet;
 
-  var STATE_KEY = 'umatiket_state_v1';
+  // パスワード要件の変更に伴いキーを v2 へ更新（旧データは破棄して初期化される）
+  var STATE_KEY = 'umatiket_state_v2';
+  var OLD_STATE_KEYS = ['umatiket_state_v1'];
   var DEVICE_KEY = 'umatiket_device';
+
+  // パスワードポリシー
+  var MIN_PASSWORD = 12;
 
   var WITHDRAW_FEE = 220;          // 出金手数料
   var MIN_DEPOSIT = 1000;
@@ -91,6 +96,8 @@
 
   function load() {
     try {
+      // 旧バージョンの保存データ（旧パスワード）が残っていれば削除する
+      OLD_STATE_KEYS.forEach(function (k) { localStorage.removeItem(k); });
       var raw = localStorage.getItem(STATE_KEY);
       if (raw) {
         var s = JSON.parse(raw);
@@ -175,9 +182,8 @@
     if (!/^[A-Za-z0-9_]{4,20}$/.test(form.loginId)) {
       return { ok: false, error: 'ユーザーIDは半角英数字・アンダースコア4〜20文字で入力してください。' };
     }
-    if (String(form.password).length < 8) {
-      return { ok: false, error: 'パスワードは8文字以上で入力してください。' };
-    }
+    var pwErr = checkPassword(form.password, form.loginId);
+    if (pwErr) return { ok: false, error: pwErr };
     if (form.password !== form.passwordConfirm) {
       return { ok: false, error: 'パスワードが一致しません。' };
     }
@@ -203,6 +209,35 @@
     state.sessionUserId = id;
     commit();
     return { ok: true, user: acc };
+  }
+
+  /* パスワード強度チェック。問題があればエラーメッセージを返す（問題なければ空文字） */
+  function checkPassword(pw, loginId) {
+    pw = String(pw || '');
+    if (pw.length < MIN_PASSWORD) {
+      return 'パスワードは' + MIN_PASSWORD + '文字以上で入力してください。';
+    }
+    var kinds = 0;
+    if (/[a-z]/.test(pw)) kinds++;
+    if (/[A-Z]/.test(pw)) kinds++;
+    if (/[0-9]/.test(pw)) kinds++;
+    if (/[^A-Za-z0-9]/.test(pw)) kinds++;
+    if (kinds < 3) {
+      return 'パスワードは英大文字・英小文字・数字・記号のうち3種類以上を含めてください。';
+    }
+    if (loginId && pw.toLowerCase().indexOf(String(loginId).toLowerCase()) >= 0) {
+      return 'パスワードにユーザーIDを含めることはできません。';
+    }
+    if (/^(.)\1+$/.test(pw)) {
+      return '同じ文字の繰り返しは使用できません。';
+    }
+    var weak = ['password', 'passw0rd', 'qwerty', 'umatiket', 'test1234', 'abcd1234', '12345678'];
+    for (var i = 0; i < weak.length; i++) {
+      if (pw.toLowerCase().indexOf(weak[i]) >= 0) {
+        return '推測されやすい文字列（' + weak[i] + ' など）は使用できません。';
+      }
+    }
+    return '';
   }
 
   function age(birthday) {
@@ -458,8 +493,10 @@
     MIN_WITHDRAW: MIN_WITHDRAW,
     MIN_BET_UNIT: MIN_BET_UNIT,
     MAX_BET_UNIT: MAX_BET_UNIT,
+    MIN_PASSWORD: MIN_PASSWORD,
     DEPOSIT_METHODS: DEPOSIT_METHODS,
     STATUS_LABEL: STATUS_LABEL,
+    checkPassword: checkPassword,
 
     get state() { return state; },
     subscribe: function (fn) { listeners.push(fn); },

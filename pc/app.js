@@ -912,7 +912,7 @@
       '<div class="form-row"><label>ユーザーID<span class="req">必須</span></label>' +
       '<div class="field"><input type="text" id="lg-id" class="uma-login-id" placeholder="user01" autocomplete="username"></div></div>' +
       '<div class="form-row"><label>パスワード<span class="req">必須</span></label>' +
-      '<div class="field"><input type="password" id="lg-pw" class="uma-login-pw" placeholder="test1234" autocomplete="current-password"></div></div>' +
+      '<div class="field"><input type="password" id="lg-pw" class="uma-login-pw" placeholder="パスワード" autocomplete="current-password"></div></div>' +
       '<div style="text-align:center;margin-top:18px">' +
       '<button class="btn btn-main btn-lg uma-login-submit" id="lg-go">ログイン</button></div>' +
       '<div style="text-align:center;margin-top:14px;font-size:12.5px">' +
@@ -926,8 +926,9 @@
     $('#lg-pw').addEventListener('keydown', function (e) { if (e.key === 'Enter') doLogin(); });
     $$('[data-fill]').forEach(function (b) {
       b.addEventListener('click', function () {
-        $('#lg-id').value = b.getAttribute('data-fill');
-        $('#lg-pw').value = 'test1234';
+        var id = b.getAttribute('data-fill');
+        $('#lg-id').value = id;
+        $('#lg-pw').value = testUserPassword(id);
       });
     });
 
@@ -941,18 +942,27 @@
   }
 
   function testUserTable() {
-    return '<table class="table uma-testuser-table"><thead><tr><th>ID</th><th>お名前</th>' +
-      '<th class="num">残高</th><th></th></tr></thead><tbody>' +
+    return '<table class="table uma-testuser-table"><thead><tr><th style="width:80px">ID</th><th>お名前</th>' +
+      '<th style="width:170px">パスワード</th><th class="num" style="width:90px">残高</th><th style="width:60px"></th>' +
+      '</tr></thead><tbody>' +
       D.TEST_USERS.map(function (u) {
         return '<tr class="uma-testuser-row" data-login-id="' + u.loginId + '">' +
           '<td><code class="uma-testuser-id">' + u.loginId + '</code></td>' +
           '<td><span class="uma-testuser-name">' + esc(u.name) + '</span>' +
           '<div class="uma-testuser-memo" style="font-size:11px;color:#6b7a72">' + esc(u.memo) + '</div></td>' +
+          '<td><code class="uma-testuser-password" style="font-size:11.5px">' + esc(u.password) + '</code></td>' +
           '<td class="num uma-testuser-balance">' + yen(u.balance) + '</td>' +
           '<td><button class="btn btn-ghost btn-sm uma-testuser-fill" data-fill="' + u.loginId + '">入力</button></td></tr>';
       }).join('') +
       '</tbody></table><div style="padding:10px 14px;font-size:12px;color:#6b7a72">' +
-      'パスワードは全アカウント共通で <b>test1234</b> です。</div>';
+      'パスワードは<b>アカウントごとに異なります</b>（16文字以上・英大小文字＋数字＋記号）。' +
+      '「入力」ボタンでログインフォームに自動入力できます。</div>';
+  }
+
+  // ログインIDからテストユーザーのパスワードを引く
+  function testUserPassword(loginId) {
+    var u = D.TEST_USERS.filter(function (x) { return x.loginId === loginId; })[0];
+    return u ? u.password : '';
   }
 
   /* ================================================ 会員登録 */
@@ -963,7 +973,9 @@
       '<div class="panel uma-register-form"><h2>お客様情報の入力</h2><div class="panel-body">' +
       '<div id="reg-msg" class="uma-form-error"></div>' +
       field('ユーザーID', '必須', rgInput('loginId', 'text', '半角英数字4〜20文字'), '半角英数字とアンダースコアが使用できます。') +
-      field('パスワード', '必須', rgInput('password', 'password', '8文字以上'), '8文字以上で入力してください。') +
+      field('パスワード', '必須', rgInput('password', 'password', S.MIN_PASSWORD + '文字以上'),
+        S.MIN_PASSWORD + '文字以上で、英大文字・英小文字・数字・記号のうち3種類以上を含めてください。' +
+        'ユーザーIDや推測されやすい文字列は使用できません。') +
       field('パスワード（確認）', '必須', rgInput('passwordConfirm', 'password')) +
       field('お名前', '必須', rgInput('name', 'text', '競馬 太郎')) +
       field('フリガナ', '必須', rgInput('kana', 'text', 'ケイバ タロウ')) +
@@ -1103,7 +1115,7 @@
       '</tbody></table></div></div>' +
 
       '<div class="panel"><h2>データのリセット</h2><div class="panel-body">' +
-      '<p>会員情報・残高・投票履歴は <code>localStorage</code>（キー: <code>umatiket_state_v1</code>）に保存されます。' +
+      '<p>会員情報・残高・投票履歴は <code>localStorage</code>（キー: <code>umatiket_state_v2</code>）に保存されます。' +
       '初期状態に戻す場合は以下のボタンを押してください（新規登録したアカウントも削除されます）。</p>' +
       '<button class="btn btn-danger" id="help-reset">デモデータを初期化する</button>' +
       '</div></div>';

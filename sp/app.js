@@ -56,6 +56,12 @@
     return { pc: 'PC版', tablet: 'タブレット版', sp: 'スマートフォン版' }[d] || d;
   }
 
+  // ログインIDからテストユーザーのパスワードを引く
+  function testUserPassword(loginId) {
+    var u = D.TEST_USERS.filter(function (x) { return x.loginId === loginId; })[0];
+    return u ? u.password : '';
+  }
+
   /* ------------------------------------------------ ヘッダー */
 
   function renderHeader() {
@@ -780,7 +786,7 @@
       '<div class="field"><label class="fl">ユーザーID<span class="req">必須</span></label>' +
       '<input type="text" id="lg-id" class="uma-login-id" placeholder="user01"></div>' +
       '<div class="field"><label class="fl">パスワード<span class="req">必須</span></label>' +
-      '<input type="password" id="lg-pw" class="uma-login-pw" placeholder="test1234"></div>' +
+      '<input type="password" id="lg-pw" class="uma-login-pw" placeholder="パスワード"></div>' +
       '<button class="btn btn-main uma-login-submit" id="lg-go">ログイン</button>' +
       '<div style="text-align:center;margin-top:12px;font-size:12.5px">' +
       'はじめての方は <a href="#/register" class="uma-register-nav">新規会員登録</a></div></div></div>' +
@@ -788,8 +794,10 @@
 
     $('#lg-go').addEventListener('click', doLogin);
     on('[data-fill]', 'click', function (b) {
-      $('#lg-id').value = b.getAttribute('data-fill'); $('#lg-pw').value = 'test1234';
-      toast(b.getAttribute('data-fill') + ' を入力しました');
+      var id = b.getAttribute('data-fill');
+      $('#lg-id').value = id;
+      $('#lg-pw').value = testUserPassword(id);
+      toast(id + ' を入力しました');
     });
 
     function doLogin() {
@@ -801,13 +809,15 @@
   }
 
   function testUserBox() {
-    return '<div class="box"><h2>テストアカウント<span style="font-size:10.5px;color:#76867e">PW共通 test1234</span></h2>' +
+    return '<div class="box"><h2>テストアカウント<span style="font-size:10.5px;color:#76867e">PWは個別</span></h2>' +
       '<div class="box-body flush uma-testuser-table">' + D.TEST_USERS.map(function (u) {
         return '<div class="uma-testuser-row" data-login-id="' + u.loginId + '"' +
           ' style="display:flex;align-items:center;gap:9px;padding:10px 13px;border-bottom:1px solid #f0f4f2">' +
           '<div style="flex:1;min-width:0"><b class="uma-testuser-id" style="font-size:13px">' + u.loginId + '</b>' +
           '<div style="font-size:11px;color:#76867e"><span class="uma-testuser-name">' + esc(u.name) + '</span>／' +
           '<span class="uma-testuser-balance">' + yen(u.balance) + '</span></div>' +
+          '<div style="font-size:10.5px;word-break:break-all">PW: ' +
+          '<code class="uma-testuser-password">' + esc(u.password) + '</code></div>' +
           '<div class="uma-testuser-memo" style="font-size:10px;color:#76867e">' + esc(u.memo) + '</div></div>' +
           '<button class="btn btn-ghost btn-sm uma-testuser-fill" data-fill="' + u.loginId + '">入力</button></div>';
       }).join('') + '</div></div>';
@@ -820,7 +830,10 @@
       '<div class="sub">デモサイトです。実在の個人情報は入力しないでください</div>' +
       '<div class="box uma-register-form"><div class="box-body"><div id="reg-msg" class="uma-form-error"></div>' +
       f('ユーザーID', '必須', 'loginId', 'text', '半角英数字4〜20文字') +
-      f('パスワード', '必須', 'password', 'password', '8文字以上') +
+      f('パスワード', '必須', 'password', 'password', S.MIN_PASSWORD + '文字以上') +
+      '<div class="hint" style="margin:-8px 0 12px">' + S.MIN_PASSWORD +
+      '文字以上で、英大文字・英小文字・数字・記号のうち3種類以上を含めてください。' +
+      'ユーザーIDや推測されやすい文字列は使用できません。</div>' +
       f('パスワード（確認）', '必須', 'passwordConfirm', 'password') +
       f('お名前', '必須', 'name', 'text', '競馬 太郎') +
       f('フリガナ', '必須', 'kana', 'text', 'ケイバ タロウ') +
@@ -927,7 +940,7 @@
       kv('馬券購入', '1点 ' + yen(S.MIN_BET_UNIT) + '〜' + yen(S.MAX_BET_UNIT)) +
       '</div></div>' +
       '<div class="box"><h2>データのリセット</h2><div class="box-body">' +
-      '<p style="font-size:12.5px">会員情報・残高・投票履歴は localStorage（<code>umatiket_state_v1</code>）に保存されます。</p>' +
+      '<p style="font-size:12.5px">会員情報・残高・投票履歴は localStorage（<code>umatiket_state_v2</code>）に保存されます。</p>' +
       '<button class="btn btn-danger" id="help-reset">デモデータを初期化する</button></div></div>';
 
     $('#help-reset').addEventListener('click', function () {

@@ -458,6 +458,12 @@
     return { pc: 'PC版', tablet: 'タブレット版', sp: 'スマートフォン版' }[d] || d;
   }
 
+  // ログインIDからテストユーザーのパスワードを引く
+  function testUserPassword(loginId) {
+    var u = D.TEST_USERS.filter(function (x) { return x.loginId === loginId; })[0];
+    return u ? u.password : '';
+  }
+
   function drawMine(race) {
     var mine = S.betsFor(race.key);
     $('#mine-area').innerHTML = mine.length
@@ -757,7 +763,7 @@
       '<div class="field-block"><label class="fl">ユーザーID<span class="req">必須</span></label>' +
       '<input type="text" id="lg-id" class="uma-login-id" placeholder="user01"></div>' +
       '<div class="field-block"><label class="fl">パスワード<span class="req">必須</span></label>' +
-      '<input type="password" id="lg-pw" class="uma-login-pw" placeholder="test1234"></div>' +
+      '<input type="password" id="lg-pw" class="uma-login-pw" placeholder="パスワード"></div>' +
       '<button class="btn btn-main btn-block btn-lg uma-login-submit" id="lg-go">ログイン</button>' +
       '<div style="text-align:center;margin-top:14px;font-size:13px">' +
       'アカウントをお持ちでない方は <a href="#/register" class="uma-register-nav">新規会員登録</a></div>' +
@@ -766,7 +772,9 @@
     $('#lg-go').addEventListener('click', doLogin);
     $('#lg-pw').addEventListener('keydown', function (e) { if (e.key === 'Enter') doLogin(); });
     on('[data-fill]', 'click', function (b) {
-      $('#lg-id').value = b.getAttribute('data-fill'); $('#lg-pw').value = 'test1234';
+      var id = b.getAttribute('data-fill');
+      $('#lg-id').value = id;
+      $('#lg-pw').value = testUserPassword(id);
     });
 
     function doLogin() {
@@ -778,14 +786,17 @@
   }
 
   function testUserCard() {
-    return '<div class="card"><h2>テストアカウント（パスワード共通：test1234）</h2><div class="card-body flush">' +
-      '<table class="table uma-testuser-table"><thead><tr><th style="width:100px">ID</th><th>お名前</th>' +
-      '<th class="num" style="width:110px">残高</th><th style="width:80px"></th></tr></thead><tbody>' +
+    return '<div class="card"><h2>テストアカウント<span style="font-size:11px;color:#708278">' +
+      'パスワードはアカウントごとに異なります</span></h2><div class="card-body flush">' +
+      '<table class="table uma-testuser-table"><thead><tr><th style="width:80px">ID</th><th>お名前</th>' +
+      '<th style="width:160px">パスワード</th><th class="num" style="width:100px">残高</th>' +
+      '<th style="width:70px"></th></tr></thead><tbody>' +
       D.TEST_USERS.map(function (u) {
         return '<tr class="uma-testuser-row" data-login-id="' + u.loginId + '">' +
           '<td><code class="uma-testuser-id">' + u.loginId + '</code></td>' +
           '<td><span class="uma-testuser-name">' + esc(u.name) + '</span>' +
           '<div class="uma-testuser-memo" style="font-size:11px;color:#708278">' + esc(u.memo) + '</div></td>' +
+          '<td><code class="uma-testuser-password" style="font-size:11px">' + esc(u.password) + '</code></td>' +
           '<td class="num uma-testuser-balance">' + yen(u.balance) + '</td>' +
           '<td><button class="btn btn-ghost btn-sm uma-testuser-fill" data-fill="' + u.loginId + '">入力</button></td></tr>';
       }).join('') + '</tbody></table></div></div>';
@@ -800,13 +811,16 @@
       '<div class="grid2">' +
       fb('ユーザーID', '必須', 'loginId', 'text', '半角英数字4〜20文字') +
       fb('生年月日', '必須', 'birthday', 'date', '', '1990-01-01') +
-      fb('パスワード', '必須', 'password', 'password', '8文字以上') +
+      fb('パスワード', '必須', 'password', 'password', S.MIN_PASSWORD + '文字以上') +
       fb('パスワード（確認）', '必須', 'passwordConfirm', 'password') +
       fb('お名前', '必須', 'name', 'text', '競馬 太郎') +
       fb('フリガナ', '必須', 'kana', 'text', 'ケイバ タロウ') +
       fb('メールアドレス', '必須', 'email', 'email', 'taro@example.test') +
       fb('電話番号', '必須', 'tel', 'tel', '090-0000-0000') +
       '</div>' +
+      '<div class="hint" style="margin:-4px 0 12px">パスワードは' + S.MIN_PASSWORD +
+      '文字以上で、英大文字・英小文字・数字・記号のうち3種類以上を含めてください。' +
+      'ユーザーIDや推測されやすい文字列は使用できません。</div>' +
       fb('出金先口座', '', 'bank', 'text', '○○銀行 ○○支店 普通 1234567') +
       '<label style="display:flex;gap:9px;align-items:center;margin:10px 0 18px">' +
       '<input type="checkbox" id="rg-agree" class="uma-register-agree" style="width:auto">' +
@@ -901,7 +915,7 @@
       tr('馬券購入', '1点 ' + yen(S.MIN_BET_UNIT) + '〜' + yen(S.MAX_BET_UNIT)) +
       '</tbody></table></div></div>' +
       '<div class="card"><h2>データのリセット</h2><div class="card-body">' +
-      '<p>会員情報・残高・投票履歴は localStorage（<code>umatiket_state_v1</code>）に保存されます。</p>' +
+      '<p>会員情報・残高・投票履歴は localStorage（<code>umatiket_state_v2</code>）に保存されます。</p>' +
       '<button class="btn btn-danger btn-block" id="help-reset">デモデータを初期化する</button></div></div>';
 
     $('#help-reset').addEventListener('click', function () {

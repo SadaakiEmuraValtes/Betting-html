@@ -95,33 +95,36 @@
 
   /* ------------------------------------------------ テストユーザー */
 
+  /* テストユーザー
+   * パスワードはアカウントごとに異なる16文字以上とし、
+   * 英大文字・英小文字・数字・記号をすべて含める（ユーザーIDから推測できないもの）。 */
   var TEST_USERS = [
     {
-      id: 'u001', loginId: 'user01', password: 'test1234', name: '山田 太郎',
+      id: 'u001', loginId: 'user01', password: 'Zx7#Harukaze-Mine', name: '山田 太郎',
       kana: 'ヤマダ タロウ', email: 'yamada.taro@umatiket.test', birthday: '1985-04-12',
       tel: '090-1111-0001', bank: 'ウマ銀行 本店 普通 1234567',
       balance: 50000, memo: '標準的な残高のユーザー'
     },
     {
-      id: 'u002', loginId: 'user02', password: 'test1234', name: '鈴木 花子',
+      id: 'u002', loginId: 'user02', password: 'Qr4$Tsukikage-Bay', name: '鈴木 花子',
       kana: 'スズキ ハナコ', email: 'suzuki.hanako@umatiket.test', birthday: '1992-11-03',
       tel: '090-1111-0002', bank: 'ケイバ信用金庫 中央支店 普通 2345678',
       balance: 250000, memo: '高額残高ユーザー'
     },
     {
-      id: 'u003', loginId: 'user03', password: 'test1234', name: '田中 次郎',
+      id: 'u003', loginId: 'user03', password: 'Vm9%Aomine-Ridge', name: '田中 次郎',
       kana: 'タナカ ジロウ', email: 'tanaka.jiro@umatiket.test', birthday: '1978-06-25',
       tel: '090-1111-0003', bank: 'ターフ銀行 駅前支店 普通 3456789',
       balance: 800, memo: '残高不足の検証用ユーザー'
     },
     {
-      id: 'u004', loginId: 'user04', password: 'test1234', name: '佐藤 美咲',
+      id: 'u004', loginId: 'user04', password: 'Tp2!Sakura-Levee', name: '佐藤 美咲',
       kana: 'サトウ ミサキ', email: 'sato.misaki@umatiket.test', birthday: '1999-01-18',
       tel: '090-1111-0004', bank: 'ウマ銀行 みどり支店 普通 4567890',
       balance: 12000, memo: '入出金履歴を持つユーザー'
     },
     {
-      id: 'u005', loginId: 'user05', password: 'test1234', name: '中村 竜也',
+      id: 'u005', loginId: 'user05', password: 'Ls6@Takaoka-Crest', name: '中村 竜也',
       kana: 'ナカムラ タツヤ', email: 'nakamura.tatsuya@umatiket.test', birthday: '1965-09-30',
       tel: '090-1111-0005', bank: 'ケイバ信用金庫 南支店 普通 5678901',
       balance: 0, memo: '残高0・初回入金の検証用ユーザー'
